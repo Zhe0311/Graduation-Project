@@ -5,11 +5,14 @@ function playSimulation(position)
     for i = 2 : 1 : carNumber
         spacings(i, :) = position(i-1, :) - position(i, :);
     end
-    figure(1);
-    set(gca, 'position', [0.05,0.05,0.9,0.4])
-    axis([0 1200 0 20])
-    for i = 1 : 1 : carNumber
-        rectangle('Position', [50*(i-1)+spacings(i,1), 10, 50, 10], 'LineWidth', 2, 'EdgeColor', 'r');
+    figure();
+    for i = 1 : 1 : time
+        temp = 50;
+        pic = ones(160, 2500);
+        for j = 1 : 1 : carNumber
+            pic(50:80, temp+10*spacings(j,i):temp+10*spacings(j,i)+50) = 0;
+            temp = temp+10*spacings(j,i);
+        end
+        imshow(pic)
     end
 end
-
