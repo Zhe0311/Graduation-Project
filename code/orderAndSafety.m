@@ -2,10 +2,10 @@
 clear;
 clc;
 %% 确定基本参数
-p = 0.5;
+p = 0.7;
 num = 11;
 num_1 = num - 1;
-ve = 15;
+ve = 30;
 %%
 meanStableTime = zeros(length(p), 1);
 meanPDT = zeros(length(p), 1);
