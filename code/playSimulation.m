@@ -8,7 +8,7 @@ function playSimulation(position, velocity, label)
     figure();
     for i = 1 : 1 : time
         temp = 50;
-        pic = ones(160, 5000, 3);
+        pic = ones(160, 2500, 3);
         for j = 1 : 1 : carNumber
             if j > 1
                 ifdanger = 0;

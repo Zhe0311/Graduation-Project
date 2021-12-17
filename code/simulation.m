@@ -1,4 +1,5 @@
-function [ PDTrate, PDTrate_HV_AV, PDTrate_HV_HV, PDTrate_AV, PDTrate_HV, ifstable, stableIndex, TET, TIT, TET_AV, TET_HV, TIT_AV, TIT_HV] = simulation( num, vehiclelabel, veset )
+function [ PDTrate, ifstable, stableIndex, crash] = simulation( num, vehiclelabel, veset)
+    crash = {false, 0, [], 0}; % {是否发生了碰撞(bool)，发生碰撞的时间(float)，车队排列(list)，追尾的车辆下标(int, 不包含头车) 
     %% 车队参数
     num_l = num - 1;%不包含头车的车辆数目
     delta_t = 0.01;
@@ -20,6 +21,9 @@ function [ PDTrate, PDTrate_HV_AV, PDTrate_HV_HV, PDTrate_AV, PDTrate_HV, ifstab
     PDT_HV = zeros(num_l, t_num);
     PDT_HV_HV = zeros(num_l, t_num);
     PDT_HV_AV = zeros(num_l, t_num);
+    PDTrate = -1;
+    ifstable = 0;
+    stableIndex = -1;
     %AV和HV在车队中的位置
     label=vehiclelabel;
     %初始速度
@@ -49,22 +53,50 @@ function [ PDTrate, PDTrate_HV_AV, PDTrate_HV_HV, PDTrate_AV, PDTrate_HV, ifstab
     tao = 0.05;
     %急减速减速度
     ades = 6.1;
+
+    %% 计算稳定性
+    p = sum(label)/num_l;
+    hs = s0-v0/alpha*log(1-ve/v0);
+    vd = alpha*exp(-1*alpha/v0*(hs-s0));
+    
+    %% 计算车队传递函数最大增益
+    w = 0 : 0.01 : 30;
+    norm_HV = zeros(length(w), 1);
+    norm_AV = zeros(length(w), 1);
+    mid = zeros(length(w), 1);
+    for z = 1 : 1 : length(w)
+        norm_HV(z) = k*vd / sqrt(w(z)^4+(k^2-2*k*vd)*(w(z)^2)+(k*vd)^2);
+        norm_AV(z) = (sqrt(k1^2+(k2*w(z))^2)) / (sqrt((k1-(deltat+k2*th)*(w(z)^2))^2+(w(z)*(k2+k1*th))^2));
+        mid(z) = (norm_HV(z))^(1-p) * (norm_AV(z))^p;
+    end
+    % Gmax = (max(norm_HV)^(1-p)) * (max(norm_AV)^p);
+    Gmax = max(mid);
+    if Gmax <= 1
+        ifstable = 1;
+    else
+        ifstable = 0;
+    end
+
+    if ifstable == 0
+        stableIndex = Gmax;
+    end
+
     %% 初始位置
-for i=1:1:num_l
-    v(i+1,1)=ve;    
-    if label(i)==1
-        h(i,1)=th*ve;
-    else
-        h(i,1)=s0-v0/alpha*log(1-ve/v0);
+    for i=1:1:num_l
+        v(i+1,1)=ve;    
+        if label(i)==1
+            h(i,1)=th*ve;
+        else
+            h(i,1)=s0-v0/alpha*log(1-ve/v0);
+        end
     end
-end
-for i=num_l:-1:0
-    if i==num_l
-        x(i+1,1)=sum(l((i+1):end));
-    else
-        x(i+1,1)=sum(l((i+1):end))+sum(h((i+1):end,1));
+    for i=num_l:-1:0
+        if i==num_l
+            x(i+1,1)=sum(l((i+1):end));
+        else
+            x(i+1,1)=sum(l((i+1):end))+sum(h((i+1):end,1));
+        end
     end
-end
     %% 开始遍历一次仿真过程
     for i=2:1:t_num
         %先计算头车的速度，位置
@@ -88,6 +120,17 @@ end
             %计算速度、位置、车间距
             v(j+1,i)=max(v(j+1,i-1)+a(j+1,i)*delta_t,0);
             x(j+1,i)=x(j+1,i-1)+v(j+1,i)*delta_t;
+
+            % 如果发生碰撞，停止实验
+            if x(j+1, i) >= x(j, i) - 5
+                crash{1} = true;         % 是否发生碰撞
+                crash{2} = i * delta_t;  % 发生碰撞的时间
+                crash{3} = label;        % 车队排列
+                crash{4} = j;            % 发生追尾的车辆下标
+                return
+                % error("Crashed!!!!!!!!!!!!");
+            end
+
             h(j,i)=x(j,i)-x(j+1,i)-l(j);
             if label(j)==0
                 A=act*v(j+1,i);
@@ -112,6 +155,7 @@ end
             end
         end
     end
+
     %% 计算评价指标
     for i=2:1:t_num
         for j=1:1:num_l
@@ -128,76 +172,23 @@ end
     
     ttcthreshold = 2;
     TET = zeros(num_l, 1);
-    TET_AV = zeros(num_l, 1);
-    TET_HV = zeros(num_l, 1);
     TIT = zeros(num_l, 1);
-    TIT_AV = zeros(num_l, 1);
-    TIT_HV = zeros(num_l, 1);
     for i = 2 : 1 : t_num
         for j = 1 : 1 : num_l
             if (ttc(j,i)>0) && (ttc(j,i)<=ttcthreshold)
                 TET(j) = TET(j) + 1;
                 TIT(j) = TIT(j) + 1/ttc(j,i) -1/ttcthreshold;
-                if label(j) == 1
-                    TET_AV(j) = TET_AV(j) + 1;
-                    TIT_AV(j) = TIT_AV(j) + 1/ttc(j,i) -1/ttcthreshold;
-                else
-                    TET_HV(j) = TET_HV(j) + 1;
-                    TIT_HV(j) = TIT_HV(j) + 1/ttc(j,i) -1/ttcthreshold;
-                end
             end
         end
     end
     TET = sum(TET * delta_t);
     TIT = sum(TIT * delta_t);
-    TET_AV = sum(TET_AV * delta_t);
-    TIT_AV = sum(TIT_AV * delta_t);
-    TET_HV = sum(TET_HV * delta_t);
-    TIT_HV = sum(TIT_HV * delta_t);
     PDTrate = sum(sum(PDT')) / num_l / t_num;
-    PDTrate_AV = sum(sum(PDT_AV')) / sum(label) / t_num;
-    PDTrate_HV = sum(sum(PDT_HV')) / (num_l-sum(label)) / t_num;
-    
-    HV_AV = 0;
-    HV_HV = 0;
-    for i = 2 : 1 : num_l
-        if label(i) == 0
-            if label(i-1) == 1
-                HV_AV = HV_AV + 1;
-            else
-                HV_HV = HV_HV + 1;
-            end
-        end
-    end
-    PDTrate_HV_AV = sum(sum(PDT_HV_AV')) / HV_AV / t_num;
-    PDTrate_HV_HV = sum(sum(PDT_HV_HV')) / HV_HV / t_num;
-    %% 计算稳定性
-    p = sum(label)/num_l;
-    hs=s0-v0/alpha*log(1-ve/v0);
-    ifstable = 0;
-    vd=alpha*exp(-1*alpha/v0*(hs-s0));
-    
-    %% 计算车队传递函数最大增益
-    w = 0 : 0.01 : 30;
-    norm_HV = zeros(length(w), 1);
-    norm_AV = zeros(length(w), 1);
-    mid = zeros(length(w), 1);
-    for z = 1 : 1 : length(w)
-        norm_HV(z) = k*vd / sqrt(w(z)^4+(k^2-2*k*vd)*(w(z)^2)+(k*vd)^2);
-        norm_AV(z) = (sqrt(k1^2+(k2*w(z))^2)) / (sqrt((k1-(deltat+k2*th)*(w(z)^2))^2+(w(z)*(k2+k1*th))^2));
-        mid(z) = (norm_HV(z))^(1-p) * (norm_AV(z))^p;
-    end
-    % Gmax = (max(norm_HV)^(1-p)) * (max(norm_AV)^p);
-    Gmax = max(mid);
-    if Gmax <= 1
-        ifstable = 1;
-    end
-    %% 如果不稳定，稳定性指标为传递函数最大增益
-    if ifstable ~= 1
-        stableIndex = Gmax;
-    else
+
+    %% 如果稳定
+    if ifstable
         midv=v(num,:);
-        stablev = ve * 0.9;
+        stablev = ve;
         % if min(abs(midv-stablev))<=0.05*stablev
         %     ifstable=2;
         % end
