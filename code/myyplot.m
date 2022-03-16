@@ -1,5 +1,13 @@
-for i = 1 : 1 : 11
-    plot(Gmax(i, :), PDT_rate(i, :), 'DisplayName', num2str(0.1*(i-1)));
-    hold on;
+G_unique = sort(unique(G));
+
+y = zeros(length(G_unique), 1);
+for i = 1 : 1 : length(G_unique)
+    y(i) = mean(crashtime(G == G_unique(i)));
 end
-legend
+
+scatter(G, crashtime);
+hold on;
+plot(G_unique, y);
+legend(["", "mean crash time"])
+xlabel("传递函数最大增益");
+ylabel("第一次碰撞发生的时间(s)");

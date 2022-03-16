@@ -1,4 +1,4 @@
-function [ PDTrate, ifstable, stableIndex, crash] = simulation( num, vehiclelabel, veset)
+function [ PDTrate, ifstable, GmaxList, stableIndex, crash] = simulation(num, vehiclelabel, veset)
     crash = {false, 0, [], 0}; % {是否发生了碰撞(bool)，发生碰撞的时间(float)，车队排列(list)，追尾的车辆下标(int, 不包含头车) 
     %% 车队参数
     num_l = num - 1;%不包含头车的车辆数目
@@ -21,6 +21,7 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation( num, vehiclelabe
     PDT_HV = zeros(num_l, t_num);
     PDT_HV_HV = zeros(num_l, t_num);
     PDT_HV_AV = zeros(num_l, t_num);
+    GmaxList = zeros(num_l, 1);
     PDTrate = -1;
     ifstable = 0;
     stableIndex = -1;
@@ -69,7 +70,7 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation( num, vehiclelabe
         norm_AV(z) = (sqrt(k1^2+(k2*w(z))^2)) / (sqrt((k1-(deltat+k2*th)*(w(z)^2))^2+(w(z)*(k2+k1*th))^2));
         mid(z) = (norm_HV(z))^(1-p) * (norm_AV(z))^p;
     end
-    % Gmax = (max(norm_HV)^(1-p)) * (max(norm_AV)^p);
+    %
     Gmax = max(mid);
     if Gmax <= 1
         ifstable = 1;
@@ -79,6 +80,20 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation( num, vehiclelabe
 
     if ifstable == 0
         stableIndex = Gmax;
+    end
+    
+    %% 计算前1、前2、...前num_l辆车的传递函数最大增益
+    mid = zeros(length(w), 1);
+    for i = 1 : 1 : num_l
+        partOfLabel = label(1:i);
+        ratioAV = sum(partOfLabel == 1)/i;
+        ratioHV = sum(partOfLabel == 0)/i;
+        for z = 1 : 1 : length(w)
+            norm_HV(z) = k*vd / sqrt(w(z)^4+(k^2-2*k*vd)*(w(z)^2)+(k*vd)^2);
+            norm_AV(z) = (sqrt(k1^2+(k2*w(z))^2)) / (sqrt((k1-(deltat+k2*th)*(w(z)^2))^2+(w(z)*(k2+k1*th))^2));
+            mid(z) = (norm_HV(z))^ratioHV * (norm_AV(z))^ratioAV;
+        end
+        GmaxList(i) = max(mid);
     end
 
     %% 初始位置
@@ -127,7 +142,7 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation( num, vehiclelabe
                 crash{2} = i * delta_t;  % 发生碰撞的时间
                 crash{3} = label;        % 车队排列
                 crash{4} = j;            % 发生追尾的车辆下标
-                return
+                % return
                 % error("Crashed!!!!!!!!!!!!");
             end
 
