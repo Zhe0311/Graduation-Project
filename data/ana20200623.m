@@ -1,0 +1,32 @@
+clc;
+clear;
+ve=12;
+p=0.5;
+num=11;
+labelnum=500;
+num_l=num-1;
+autonum=floor(num_l*p);
+labelorder=1:1:num_l;
+% labelorder=2.^labelorder;
+% disper=0.1:0.1:0.4;
+ifstable=zeros(labelnum,1);
+% ampv=zeros(labeknum,1);
+PDTrate=zeros(labelnum,1);
+autospace=zeros(labelnum,1);
+tet=zeros(labelnum,1);
+tit=zeros(labelnum,1);
+titmod=zeros(labelnum,1);
+for z=1:1:labelnum
+    mid=randperm(num_l);
+    label=zeros(num_l,1);
+    label(mid(1:(autonum)))=1;
+    autospace(z)=labelorder*label;
+%         autospace(z,i)=sum(labelorder*label);
+%     [ifstable(z),mid3]=unstableresult( num,label,ve,0.1 );
+%     ampv(z)=mid3(num_l)/mid3(1);
+    [PDTrate(z),~,~,mid1,mid2,mid3]= safety_anamod( num,label,ve,0.6,2 );
+    tet(z)=sum(mid1);
+    tit(z)=sum(mid2);
+    titmod(z)=sum(mid3);
+%         titmod(z,i)=sum(1./nonzeros(mid2));
+end

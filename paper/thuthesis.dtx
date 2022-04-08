@@ -14,7 +14,7 @@
 %
 % \iffalse
 %<*driver>
-\ProvidesFile{thuthesis.dtx}[2021/05/31 7.2.3 Tsinghua University Thesis Template]
+\ProvidesFile{thuthesis.dtx}[2022/03/19 7.2.4 Tsinghua University Thesis Template]
 \documentclass{ltxdoc}
 \usepackage{dtx-style}
 
@@ -74,10 +74,10 @@
 % \item 本模板为作者根据
 %   清华大学研究生院颁发的《
 %    \href{http://yjsy.cic.tsinghua.edu.cn/docinfo/board/boarddetail.jsp?columnId=001050603&parentColumnId=0010506&itemSeq=5365}{%
-%   研究生学位论文写作指南}》（限校内网络访问）、
+%   研究生学位论文写作指南}》（2021年6月版本，限校内网络访问）、
 %   英文版《Guide to Thesis Writing for Graduate Students》、
 %   清华大学教务处颁发的《
-%   \href{https://lib.tsinghua.edu.cn/dra/news/annoucement/7963}{%
+%   \href{https://lib.tsinghua.edu.cn/info/1073/1978.htm}{%
 %   综合论文训练写作指南}》、
 %   外文系的《英语专业本科生综合论文训练》和
 %   清华大学《
@@ -260,7 +260,7 @@
 % \end{shell}
 %
 % 在调用 \XeLaTeX 时，如果设置了 \option{include-spine} 选项，
-% 则需要在文件名前加上 \texttt{-shell-scape} 的命令行选项。
+% 则需要在文件名前加上 \texttt{-shell-escape} 的命令行选项。
 %
 % 下面的命令用来生成用户手册：
 % \begin{shell}
@@ -852,10 +852,10 @@
 % 可能会造成正文和公式中的数字字体不一致，需要谨慎使用。
 %
 % 以上字体都是 OpenType 格式的字体，需要配合
-% \href{http://mirrors.ctan.org/macros/latex/contrib/unicode-math/unicode-math.pdf}{\pkg{unicode-math}}
+% \href{http://mirrors.ctan.org/macros/unicodetex/latex/unicode-math/unicode-math.pdf}{\pkg{unicode-math}}
 % 宏包使用。
 % 全部数学符号的命令参考
-% \href{http://mirrors.ctan.org/macros/latex/contrib/unicode-math/unimath-symbols.pdf}{\pkg{unimath-symbols}}。
+% \href{http://mirrors.ctan.org/macros/unicodetex/latex/unicode-math/unimath-symbols.pdf}{\pkg{unimath-symbols}}。
 % 注意，\pkg{unicode-math} 宏包与 \pkg{amsfonts}、\pkg{amssymb}、\pkg{bm}、
 % \pkg{mathrsfs}、\pkg{upgreek} 等宏包\emph{不}兼容。
 % 模板作了处理，用户可以直接使用这些宏包的命令，如 \cs{bm}、\cs{mathscr}、
@@ -1009,7 +1009,7 @@
 % \end{latex}
 % 另一种方式是使用 biblatex，应在导言区设置
 % \begin{latex}
-%   \usepackage[backend=biber,style=thuthesis-author-year]{biblatex}
+%   \usepackage[style=thuthesis-author-year]{biblatex}
 %   \addbibresource{ref/refs.bib}
 % \end{latex}
 % 这里的样式由 \href{https://ctan.org/pkg/biblatex-gb7714-2015}{biblatex-gb7714-2015} 进行了少量改编，
@@ -1082,12 +1082,12 @@
 % 研究生不存在空白页的问题，在编译生成声明时默认加页眉页脚（\option{plain}），
 % 而插入扫描版时不再重复（\option{empty}）。
 %
-% 声明的页眉页脚也可以通过 \option{pagestyle} 参数手动控制，
+% 声明的页眉页脚也可以通过 \option{page-style} 参数手动控制，
 % 比如编译生成时固定不加页眉页脚：
 % \begin{latex}
-%   \statement[page-style=plain]
+%   \statement[page-style=empty]
 % \end{latex}
-% 插入扫面版声明补上页眉页脚：
+% 插入扫描版声明补上页眉页脚：
 % \begin{latex}
 %   \statement[file=scan-statement.pdf, page-style=plain]
 % \end{latex}
@@ -1250,7 +1250,7 @@
 %    \begin{macrocode}
 %<cls>\NeedsTeXFormat{LaTeX2e}[2017/04/15]
 %<cls>\ProvidesClass{thuthesis}
-%<cls>[2021/05/31 7.2.3 Tsinghua University Thesis Template]
+%<cls>[2022/03/19 7.2.4 Tsinghua University Thesis Template]
 %    \end{macrocode}
 %
 % 报错
@@ -1306,7 +1306,7 @@
 %<*cls>
 \hyphenation{Thu-Thesis}
 \def\thuthesis{ThuThesis}
-\def\version{7.2.3}
+\def\version{7.2.4}
 \RequirePackage{kvdefinekeys}
 \RequirePackage{kvsetkeys}
 \RequirePackage{kvoptions}
@@ -1731,9 +1731,20 @@
 %    \end{macrocode}
 %
 % \pkg{pdfpages} 宏包便于我们插入扫描后的授权说明和声明页 PDF 文档。
+%
+% 由于 \pkg{pdfpages} 跟 \pkg{TikZ} 的 \pkg{external} 库冲突，
+% 需要在导言区的结尾进行处理，见
+% \href{https://github.com/tuna/thuthesis/issues/693}{\#693}。
 %    \begin{macrocode}
 \RequirePackage{pdfpages}
 \includepdfset{fitpaper=true}
+\AtEndPreamble{
+  \ifx\tikzifexternalizing\@undefined\else
+    \tikzifexternalizing{
+      \renewcommand*\includepdf[2][]{}
+    }{}
+  \fi
+}
 %    \end{macrocode}
 %
 % 更好的列表环境。
@@ -1784,9 +1795,11 @@
   }
 }
 \AtEndOfPackageFile*{natbib}{
-  \@ifpackageloaded{apacite}{}{
-    \RequirePackage{bibunits}
-  }
+  \ifthu@degree@bachelor
+    \@ifpackageloaded{apacite}{}{
+      \RequirePackage{bibunits}
+    }
+  \fi
 }
 %    \end{macrocode}
 %
@@ -1829,16 +1842,6 @@
 \thu@package@conflict{newtxmath}{upgreek}
 %    \end{macrocode}
 %
-% \pkg{mathtools} 需要在 \pkg{unicode-math} 前载入，
-% 参考 \url{https://tex.stackexchange.com/q/521394/82731}。
-%    \begin{macrocode}
-\AtBeginOfPackageFile*{mathtools}{
-  \@ifpackageloaded{unicode-math}{
-    \thu@error{The "mathtools" package should be loaded before setting "math-font"}
-  }{}
-}%
-%    \end{macrocode}
-%
 % \pkg{amsthm} 需要在 \pkg{newtx} 前载入，参考 \pkg{newtx} 的文档。
 %    \begin{macrocode}
 \AtBeginOfPackageFile*{amsthm}{
@@ -1858,7 +1861,12 @@
 % 本科生《写作指南》：
 % 页边距：上：3.8 厘米，下：3.2 厘米，左右：3 厘米，装订线：左 0.2 厘米。
 % 本科生 Word 模板：
-% 页眉距边界：1.5 厘米，页脚距边界：1.75 厘米。
+% 无页眉，页脚距边界：1.75 厘米。
+%
+% \pkg{fancyhdr} 的页眉是沿底部对齐的，所以只需设置 \cs{headsep}，
+% \cs{headheight} 可以适当增加高度允许多行页眉。
+% 研究生：\cs{headsep} = $\SI{3}{cm} - \SI{2.2}{cm} - \SI{10.5}{bp} \times 1.3
+% \approx \SI{0.3}{cm}$。
 %
 %    \begin{macrocode}
 \geometry{
@@ -1873,8 +1881,8 @@
       bottom     = 3.2cm,
       left       = 3.2cm,
       right      = 3cm,
-      headheight = 0.5cm,
-      headsep    = 1.8cm,
+      headheight = 1.9cm,
+      headsep    = 1.9cm,
       footskip   = 1.45cm,
     }%
     \ifthu@output@print
@@ -1890,7 +1898,7 @@
   \else
     \geometry{
       margin     = 3cm,
-      headheight = 0.5cm,
+      headheight = 2.7cm,
       headsep    = 0.3cm,
       footskip   = 0.8cm,
     }%
@@ -2837,10 +2845,12 @@
   \thu@set@stix@names
   \setmathfont{\thu@font@name@stix@math}[
     Extension    = .otf,
+    Scale        = MatchLowercase,
     StylisticSet = \thu@xits@integral@stylistic@set,
   ]%
   \setmathfont{\thu@font@name@stix@math}[
     Extension    = .otf,
+    Scale        = MatchLowercase,
     StylisticSet = 1,
     range        = {scr,bfscr},
   ]%
@@ -3079,6 +3089,7 @@
   \@mainmattertrue
   \pagenumbering{arabic}%
 }
+\newif\ifthu@backmatter
 \renewcommand\backmatter{%
   \if@openright
     \cleardoublepage
@@ -3086,6 +3097,7 @@
     \clearpage
   \fi
   \@mainmatterfalse
+  \thu@backmattertrue
   \thusetup{toc-depth = 0}%
 }
 %    \end{macrocode}
@@ -3256,7 +3268,7 @@
 %    \begin{macrocode}
 \newcommand\thu@circled[1]{%
   \ifnum#1 >10\relax
-    \thu@error{%
+    \thu@warning{%
       Too many footnotes in this page.
       Keep footnote less than 10%
     }%
@@ -3366,8 +3378,8 @@
 %
 % 图表浮动体的默认位置设为 |h|。
 %    \begin{macrocode}
-\def\fps@figure{h}
-\def\fps@table{h}
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
 %    \end{macrocode}
 %
 % 设置浮动对象和文字之间的距离
@@ -4826,41 +4838,43 @@
 % 学位论文指导小组、公开评阅人和答辩委员会名单。
 %    \begin{macrocode}
 \def\thu@committee@name{学位论文指导小组、公开评阅人和答辩委员会名单}
-\newenvironment{committee}[1][]{%
-  \cleardoublepage
-  \let\thu@committee@file\@empty
-  \kv@define@key{thu@committee}{name}{\let\thu@committee@name\kv@value}%
-  \kv@define@key{thu@committee}{file}{\let\thu@committee@file\kv@value}%
-  \kv@set@family@handler{thu@committee}{%
-    \ifx\kv@value\relax
-      \let\thu@committee@file\kv@key
-    \else
-      \kv@handled@false
-    \fi
-  }%
-  \kvsetkeys{thu@committee}{#1}%
-  \ifx\thu@committee@file\@empty
-    \begingroup
-      \ifthu@main@language@english
-        \ctexset{chapter/format=\centering\sffamily\fontsize{16bp}{20bp}\selectfont}
+\NewEnviron{committee}[1][]{%
+  \ifthu@degree@graduate
+    \cleardoublepage
+    \let\thu@committee@file\@empty
+    \kv@define@key{thu@committee}{name}{\let\thu@committee@name\kv@value}%
+    \kv@define@key{thu@committee}{file}{\let\thu@committee@file\kv@value}%
+    \kv@set@family@handler{thu@committee}{%
+      \ifx\kv@value\relax
+        \let\thu@committee@file\kv@key
+      \else
+        \kv@handled@false
       \fi
-      \thu@chapter*[]{\thu@committee@name}%
-    \endgroup
-  \else
-    \thu@pdfbookmark{0}{\thu@committee@name}%
-    \includepdf{\thu@committee@file}%
+    }%
+    \kvsetkeys{thu@committee}{#1}%
+    \ifx\thu@committee@file\@empty
+      \begingroup
+        \ifthu@main@language@english
+          \ctexset{chapter/format=\centering\sffamily\fontsize{16bp}{20bp}\selectfont}
+        \fi
+        \thu@chapter*[]{\thu@committee@name}%
+      \endgroup
+    \else
+      \thu@pdfbookmark{0}{\thu@committee@name}%
+      \includepdf{\thu@committee@file}%
+    \fi
+    \thispagestyle{empty}%
+    \ctexset{
+      section = {
+        format    += {\centering},
+        numbering = false,
+        afterindent = false,
+      },
+    }%
+    \thusetup{language=chinese}
+    \BODY\clearpage
+    \thu@reset@main@language
   \fi
-  \thispagestyle{empty}%
-  \ctexset{
-    section = {
-      format    += {\centering},
-      numbering = false,
-      afterindent = false,
-    },
-  }%
-  \thusetup{language=chinese}
-}{%
-  \thu@reset@main@language
 }
 %    \end{macrocode}
 % \end{environment}
@@ -4966,7 +4980,7 @@
     \centering
     签\quad 名：\thu@underline[6em]{}%
     导师签名：\thu@underline[6em]{}%
-    日\quad 期\thu@underline[6em]{}%
+    日\quad 期：\thu@underline[6em]{}%
     \par
   \endgroup
 }
@@ -5175,8 +5189,10 @@
     Use "page-style" option of \protect\statement command instead%
   }%
 }
+\newif\ifthu@statement@exists
 \newcommand\statement[1][]{%
   \@mainmatterfalse
+  \thu@statement@existstrue
   \ifthu@degree@bachelor
     \cleardoublepage
     \def\thu@statement@name{声\hspace{2em}明}%
@@ -5269,6 +5285,11 @@
 % 插图清单。
 %    \begin{macrocode}
 \renewcommand\listoffigures{%
+  \ifthu@degree@bachelor
+    \ifthu@backmatter\else
+      \thu@warning{The list of figures should be placed in back matter}%
+    \fi
+  \fi
   \thu@listof{figure}%
 }
 \titlecontents{figure}
@@ -5284,6 +5305,11 @@
 % 附表清单。
 %    \begin{macrocode}
 \renewcommand\listoftables{%
+  \ifthu@degree@bachelor
+    \ifthu@backmatter\else
+      \thu@warning{The list of tables should be placed in back matter}%
+    \fi
+  \fi
   \thu@listof{table}%
 }
 \titlecontents{table}
@@ -5298,11 +5324,17 @@
 % 将插图和附表合在一起列出“插图和附表清单”。
 %    \begin{macrocode}
 \newcommand\listoffiguresandtables{%
-  \thu@chapter*{\thu@list@figure@table@name}%
-  \@starttoc{lof}%
-  \par
-  \null\par
-  \@starttoc{lot}%
+  \ifthu@degree@bachelor
+    \thu@warning{The list of figures and tables are for graduates only}%
+    \listoffigures
+    \listoftables
+  \else
+    \thu@chapter*{\thu@list@figure@table@name}%
+    \@starttoc{lof}%
+    \par
+    \null\par
+    \@starttoc{lot}%
+  \fi
 }
 %    \end{macrocode}
 % \end{macro}
@@ -5794,6 +5826,11 @@
 %    \begin{macrocode}
 \g@addto@macro\appendix{%
   \@mainmattertrue
+  \ifthu@degree@bachelor
+    \ifthu@statement@exists\else
+      \thu@warning{The appendices should be placed after statement}%
+    \fi
+  \fi
 }
 %    \end{macrocode}
 %
@@ -5865,6 +5902,7 @@
     \thu@print@contents{survey}{l}{1}{2}{}%
     \vskip 20bp%
   }%
+  \let\appendix\thu@appendix@appendix
   \renewcommand\bibname{参考文献}%
   \let\bibsection\thu@appendix@bibsection
   \renewcommand\@bibunitname{\jobname-survey}%
@@ -5907,6 +5945,7 @@
     \thu@print@contents{translation}{l}{1}{2}{}%
     \vskip 20bp%
   }%
+  \let\appendix\thu@appendix@appendix
   \def\bibsection{%
     \begingroup
       \ctexset{section/numbering=false}%
@@ -5967,6 +6006,16 @@
     {\contentspush{\thecontentslabel\quad}}{}
     {\thu@leaders\thecontentspage}%
 }
+%    \end{macrocode}
+%
+% 书面翻译的附录。
+%    \begin{macrocode}
+\newcommand\thu@appendix@appendix{%
+  \def\theHsection{\Hy@AlphNoErr{section}}%
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \renewcommand\thesection{\thechapter.\@Alph\c@section}%
+}%
 %    \end{macrocode}
 %
 % 调研阅读报告的参考文献（或书面翻译对应的外文资料的原文索引）标题用宋体小四号字，段前 20pt，段后 6pt，行距 20pt。
@@ -6061,19 +6110,21 @@
 % \subsection{指导教师/小组学术评语}
 % \begin{environment}{comments}
 %    \begin{macrocode}
-\newenvironment{comments}[1][]{%
-  \@mainmatterfalse
-  \kv@define@key{thu@comments}{name}{\let\thu@comments@name\kv@value}%
-  \kv@set@family@handler{thu@comments}{%
-    \ifx\kv@value\relax
-      \let\thu@comments@name\kv@key
-    \else
-      \kv@handled@false
-    \fi
-  }%
-  \kvsetkeys{thu@comments}{#1}%
-  \chapter{\thu@comments@name}%
-}{%
+\NewEnviron{comments}[1][]{%
+  \ifthu@degree@graduate
+    \@mainmatterfalse
+    \kv@define@key{thu@comments}{name}{\let\thu@comments@name\kv@value}%
+    \kv@set@family@handler{thu@comments}{%
+      \ifx\kv@value\relax
+        \let\thu@comments@name\kv@key
+      \else
+        \kv@handled@false
+      \fi
+    }%
+    \kvsetkeys{thu@comments}{#1}%
+    \chapter{\thu@comments@name}%
+    \BODY\clearpage
+  \fi
 }
 %    \end{macrocode}
 % \end{environment}
@@ -6081,10 +6132,13 @@
 % \subsection{答辩委员会决议书}
 % \begin{environment}{resolution}
 %    \begin{macrocode}
-\newenvironment{resolution}{%
-  \@mainmatterfalse
-  \chapter{\thu@resolution@name}%
-}{}
+\NewEnviron{resolution}{%
+  \ifthu@degree@graduate
+    \@mainmatterfalse
+    \chapter{\thu@resolution@name}%
+    \BODY\clearpage
+  \fi
+}
 %    \end{macrocode}
 % \end{environment}
 %
@@ -6150,6 +6204,7 @@
   \pdfstringdefDisableCommands{
     \let\\\relax
     \let\quad\relax
+    \let\qquad\relax
     \let\hspace\@gobble
   }%
 %    \end{macrocode}
@@ -6195,6 +6250,20 @@
 }
 %    \end{macrocode}
 %
+% \subsubsection{\pkg{mathtools} 宏包}
+%
+% \pkg{mathtools} 会修改 \pkg{unicode-math} 的 \cs{underbrace} 和 \cs{overbrace}，
+% 需要还原为 \cs{LaTeXunderbrace} 和 \cs{LaTeXoverbrace}，
+% 参考 \url{https://tex.stackexchange.com/q/521394/82731}。
+%    \begin{macrocode}
+\AtEndOfPackageFile*{mathtools}{
+  \@ifpackageloaded{unicode-math}{
+    \let\underbrace\LaTeXunderbrace
+    \let\overbrace\LaTeXoverbrace
+  }{}
+}
+%    \end{macrocode}
+%
 % \subsubsection{\pkg{nomencl} 宏包}
 %
 %    \begin{macrocode}
@@ -6209,11 +6278,6 @@
 %
 %    \begin{macrocode}
 \AtEndOfPackageFile*{siunitx}{%
-  \sisetup{
-    group-minimum-digits = 4,
-    separate-uncertainty = true,
-    inter-unit-product   = \ensuremath{{}\cdot{}},
-  }
   \newcommand\thu@set@siunitx@language{%
     \ifthu@language@chinese
       \sisetup{
@@ -6526,7 +6590,12 @@
 \RequirePackage{enumitem}
 \RequirePackage{etoolbox}
 \RequirePackage{metalogo}
+
+% Pretending the `amssymb` has been loaded.
+% This should be removed after `markdown` v2.13.0.
+\expandafter\def\csname ver@amssymb.sty\endcsname{0000/00/00}
 \RequirePackage[tightLists=false]{markdown}
+\expandafter\let\csname ver@amssymb.sty\endcsname\relax
 
 \markdownSetup{
   renderers = {
