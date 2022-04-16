@@ -55,6 +55,9 @@ legend(["一阶差分结果", "加减速区间"]);
 xlabel("采样点序号");
 ylabel("速度差（km/h）");
 
+up = find(blocks == 1);
+down = find(blocks == -1);
+
 function res = postprocess(signal, postpro_index)
 % - 翻转区间长度小于postpro_index的区间以进一步消除毛刺
     len = 0;
