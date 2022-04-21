@@ -15,12 +15,12 @@ HumanDriver = find(drivers(:, 3) == 0);
 
 validIndex = intersect(valid, HumanDriver);
 
-index = validIndex(3);
+index = validIndex(2);
 data = datas{index};
 
 [n, ~] = size(data);
 t = 1 : 1 : n;
-v_midCar = data(:, 6);
+v_midCar = data(:, 9);
     
 % 平滑
 v_smooth = smooth(v_midCar, smooth_index);
@@ -48,47 +48,19 @@ THW2_all = getTHW(data, 3);
 %valid_THW = valid_THW(valid_THW >= 0);
 
 %% Plot
+subplot(2, 1, 1);
 time = 1 : 1 : n;
-v1 = data(:, 6);
-v2 = data(:, 9);
-v3 = data(:, 12);
-
-begin = 70;
-
-subplot(2, 1, 1);
-plot(time(begin:end), v1(begin:end));
+plot(time(50:end), SM_all(50:end));
 hold on;
-
-subplot(2, 1, 1);
-plot(time(begin:end), v2(begin:end));
+plot(time(50:end), THW1_all(50:end));
 hold on;
-
-subplot(2, 1, 1);
-plot(time(begin:end), v3(begin:end));
+plot(time(50:end), THW2_all(50:end));
 hold on;
-
-xlabel("采样点下标");
-ylabel("速度(m/s)");
-legend(["v1", "v2", "v3"]);
-
-subplot(2, 1, 2);
-yyaxis left;
-plot(time(begin:end), THW1_all(begin:end), '-b');
+v1 = (data(:, 6) - 50) ./ 10;
+plot(time(50:end), v1(50:end));
 hold on;
-
-subplot(2, 1, 2);
-yyaxis left;
-plot(time(begin:end), THW2_all(begin:end), '-k');
-ylabel("THW");
-hold on;
-
-subplot(2, 1, 2);
-yyaxis right;
-plot(time(begin:end), SM_all(begin:end), '-r');
-ylabel("SM");
-
-xlabel("采样点下标");
-legend(["THW1", "THW2", "SM"]);
+plot(time(50:end), 3 + 2.*blocks(50:end), 'r');
+legend(["SM", "THW"]);
 
 % v_smooth = smooth(v_midCar, smooth_index);
 % 
