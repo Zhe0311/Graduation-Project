@@ -63,35 +63,35 @@
 \section{预备知识}
   记实数域为$\mathbb{R}$，自然数集$\mathbb{N}={1, 2, \dots}$，对于向量$\chi \in \mathbb{R}^n$，其$p$范数为
   \begin{equation}
-    ||\chi||_p = \left( \sum_{i=1}^n{|\chi_i|^p} \right) ^{1/p}, p \in [1, \infty)
+    \Vert\chi\Vert_p = \left( \sum_{i=1}^n{|\chi_i|^p} \right) ^{1/p}, p \in [1, \infty)
     \label{eq:appendix-equation-1}
   \end{equation}
   \begin{equation}
-    ||\chi||_\infty = \max_{i} |\chi_i|.
+    \Vert\chi\Vert_\infty = \max_{i} |\chi_i|.
     \label{eq:appendix-equation-2}
   \end{equation}
-  对于一个勒贝格可测的信号$\chi(t):I \rightarrow \mathbb{R}^n$，其$\mathcal{L}_p$范数$||\chi||^I_{\mathcal{L}_p}$定义为
+  对于一个勒贝格可测的信号$\chi(t):I \rightarrow \mathbb{R}^n$，其$\mathcal{L}_p$范数$\Vert\chi\Vert^I_{\mathcal{L}_p}$定义为
   \begin{equation}
-    ||\chi||^I_{\mathcal{L}_p} = \left( \int_I{||\chi||_p^p dt} \right) ^{1/p} < \infty, p \in [1, \infty)
+    \Vert\chi\Vert^I_{\mathcal{L}_p} = \left( \int_I{\Vert\chi\Vert_p^p dt} \right) ^{1/p} < \infty, p \in [1, \infty)
     \label{eq:appendix-equation-3}
   \end{equation}
   \begin{equation}
-    ||\chi||^I_{\mathcal{L}_\infty} = \sup_{t \in I} ||x||_\infty,
+    \Vert\chi\Vert^I_{\mathcal{L}_\infty} = \sup_{t \in I} \Vert\chi\Vert_\infty,
     \label{eq:appendix-equation-4}
   \end{equation}
-  当$I=[0, \infty)]$时，$||\chi||^{[0, \infty)]}_{\mathcal{L}_\infty}$简记为$||\chi||_{\mathcal{L}_\infty}$。给定一个系统的传递函数$G(j\omega)$，系统的$\mathcal{H}_\infty$范数定义为
+  当$I=[0, \infty)]$时，$\Vert\chi\Vert^{[0, \infty)]}_{\mathcal{L}_\infty}$简记为$\Vert\chi\Vert_{\mathcal{L}_\infty}$。给定一个系统的传递函数$G(j\omega)$，系统的$\mathcal{H}_\infty$范数定义为
   \begin{equation}
-    ||G||_{\mathcal{H}_\infty} = \sup_{\omega}|G(j\omega)|, {\rm (SISO)}
+    \Vert G \Vert_{\mathcal{H}_\infty} = \sup_{\omega}|G(j\omega)|, {\rm (SISO)}
     \label{eq:appendix-equation-5}
   \end{equation}
   \begin{equation}
-    ||G||_{\mathcal{H}_\infty} = \sup_{\omega}\bar{\sigma} \left( G(j\omega) \right), {\rm (MIMO)}
+    \Vert G \Vert_{\mathcal{H}_\infty} = \sup_{\omega}\bar{\sigma} \left( G(j\omega) \right), {\rm (MIMO)}
     \label{eq:appendix-equation-6}
   \end{equation}
   SISO代表单输入单输出系统，MIMO代表多输入多输出系统。$\bar{\sigma} \left( G(j\omega) \right)$是矩阵$G(j\omega)$的最大奇异值（参见Zhou, Doyle, Glover et al., 1996）。
   对于连续函数$\alpha:[0, a) \rightarrow [0, \infty), a \in \mathbb{R}^+$，如果在其定义域上是严格单调递增的，并且$\alpha(0) = 0$，那么我们称这个函数是$\mathcal{K}$类函数。
-  对于连续函数$\beta:[0, a) \times [0, \infty) \rightarrow [0, \infty)$，如果对于每一个固定的$s$，函数$\beta(\cdot, s)$是$\mathcal{K}$类函数，并且对于每一个固定的$r$，函数$\beta(r, \cdot)$
-  在其定义域上是单调递减的，且满足当$s \rightarrow 0$时，$\beta (r, s) \rightarrow 0$，那么我们称这个函数是$\mathcal{KL}$类函数。如果$||\chi||_{\mathcal{L}_\infty} < \infty$，我们
+  对于连续函数$\beta:[0, a) \times [0, \infty) \rightarrow [0, \infty)$，如果对于每一个固定的$s$，函数$\beta(\cdot, s)$是$\mathcal{}$类函数，并且对于每一个固定的$r$，函数$\beta(r, \cdot)$
+  在其定义域上是单调递减的，且满足当$s \rightarrow 0$时，$\beta (r, s) \rightarrow 0$，那么我们称这个函数是$\mathcal{KL}$类函数。如果$\Vert\chi\Vert_{\mathcal{L}_\infty} < \infty$，我们
   称$\chi \in \mathcal{L}_\infty$。
 
   通常，我们考虑一个车队
