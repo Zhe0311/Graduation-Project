@@ -9,7 +9,7 @@
 % \tableofcontents
 
   \vspace{1em}
-  \textbf{摘要：}由互相关联的自动驾驶车辆 (CAV) 组成的车队预计将对道路交通产生变革性影响，例如提高高速公路安全性、提高交通效率和减少燃料消耗。控制车队时的一项关键任务是实现队列稳定性（String Stability），
+  \textbf{摘要：}由互相关联的自动驾驶车辆 (connected and automated vehicles, CAVs) 组成的车队预计将对道路交通产生变革性影响，例如提高高速公路安全性、提高交通效率和减少燃料消耗。控制车队时的一项关键任务是实现队列稳定性（String Stability），
   为此提出了许多模型和算法。但是，尽管这些年来针对队列稳定性提出了许多不同的定义和分析方法，但是没有进行详尽的比较。 为了填补这些空白，本文旨在阐明这些模糊的定义与各种分析方法之间的关系，为今后的研究提供一个坚实
   的基础。本文总结和讨论了一系列等价的定义和算法，也讨论了不同分析方法和定义的优、缺点。 所有这些讨论为在实际使用中选择车队的分析方法提供了见解。
 
@@ -139,9 +139,118 @@
 
 \subsection{队列系统描述}
 
-车队系统的描述确定了队列稳定问题的研究场景。本文采用了由四个部分组成的框架（Li et al., 2015），即节点动力学、信息流拓扑结构、分布式控制和队形几何。
-此外，还强调了系统的通信质量和收到的干扰。一个特定的车队系统可以通过这六个部分来唯一确定，本小节中用到的缩写在表A.1中列出。
+车队系统的描述确定了队列稳定问题的研究场景。本文采用了由四个部分组成的框架（Li et al., 2015），即节点动力学、信息流拓扑结构、分布式控制和构成几何。
+此外，还强调了系统的通信质量和收到的干扰。一个特定的车队系统可以通过这六个部分来唯一确定，本小节中用到的缩写在表\ref{tab:appendix-translation-tableA1}中列出。
 
+\subsubsection{节点动力学}
+
+节点动力学（node dynamics, ND）表示车辆在纵向的动力学。根据建模，车辆动力学模型可分为非线性（Dunbar and Caveney, 2012; Rajamani, 2011），
+二阶模型（Naus, Vugts, Ploeg, van de Molengraft, and Steinbuch, 2010; Yanakiev and Kanellakopoulos, 1996)，
+三阶模型（Godbole and Lygeros, 1994; Liang and Peng, 1999; Warnick and Rodriguez, 2000)，和一般线性模型（Liang and Peng, 2000; Seiler, Pant, and Hedrick, 2004）。
+
+\subsubsection{信息流拓扑结构}
+
+信息流拓扑结构（information flow topology, IFT）描述了车辆如何与其他车辆交换信息。图\ref{fig:appendix-translation-figure2}所示为常用的拓扑结构，包括前继跟随拓扑（PF）（Naus et al., 2010）、
+前继领导跟随拓扑（PLF）（Sheikholeslam and Desoer, 1990; Swaroop and Hedrick, 1999）、
+双向拓扑（BD）（Eyre, Yanakiev, and Kanellakopoulos, 1997; Ghasemi, Kazemi, and Azadi, 2013; Knorn, Donaire, Agüero, and Middleton, 2014; Yanakiev and Kanellakopoulos, 1996），
+双向领导拓扑（BDL）（Zheng, Li, Wang, Cao, and Li, 2016），
+双前继跟随拓扑（TPF）（Swaroop and Hedrick, 1999），
+以及双前继领导跟随拓扑（TPLF）（Li et al., 2015)。
+也可以应用更一般的信息流拓扑结构，例如，$r$前继跟随拓扑（$r$PF）和$r$前继领导跟随拓扑（$r$PLF），其中$r$表示有之交流的前继数量。
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1\linewidth]{appendix-A-2.jpg}
+  \caption{车队的的典型信息流拓扑结构，其中绿色圆圈表示头车。(a）PF；（b）PLF；（c）BD；（d）BDL；（e）TPF；（f）TPLF（Li et al., 2015）。}
+  \label{fig:appendix-translation-figure2}
+\end{figure}
+
+\subsubsection{分布式控制器}
+
+分布式控制器（distributed controller, DC）描述了用于实现控制目标的对车队系统的控制器，例如，线性控制器（Nauset al.，2010；Sheikholeslam and Desoer，1993）、
+最优控制器（Chu，1974b；Jin and Orosz，2017；Liang and Peng，1999）、$H_\infty$控制器（Ploeg, Shukla, van de Wouw, and Nijmeijer，2014）、
+模型预测控制（MPC）（Dolk, Ploeg, and Heemels, 2017; Dunbar and Caveney, 2012），以及滑模控制（SMC）（Fernandes and Nunes，2012）。
+
+\subsubsection{构成几何}
+
+车队的构成几何（formation geometry, FG）表示车队所期望的车辆间距离，在许多研究中也被称为间距策略。现在存在三种主要政策，
+即恒定距离（constant distance, CD）政策（Liu, Goldsmith, Mahal., and Hedrick, 2001; Sheikholeslam and Desoer, 1993）、
+恒定时间间隔（ constant time headway, CTH）政策（Chien and Ioannou, 1992; Zhou and Peng, 2005），
+以及非线性距离（nonliear distance, NLD）政策（Orosz, 2016; Santhanakrishnan abd Rajamani, 2003)。
+
+\subsubsection{通信质量}
+
+通信质量（communication quality, CQ）描述了由其引起的问题，即通信时间延迟（di Bernardo, Salvi, and Santini, 2015; Liu et al., 2001; Oncu, Van de Wouw, 
+Heemels, and Nijmeijer, 2012; Qin, Gomez, and Orosz, 2017; Xiao, Darbha, and Gao, 2008; Xiao, Gao, and Wang, 2009）
+和丢包（Moreau, 2005; Ploeg, Semsar-Kazerooni, Lijster, van de Wouw, and Nijmeijer, 2015; Teo, Stipanovic, and Tomlin, 2002; 2003）。
+
+\subsubsection{扰动}
+
+扰动是造成车队系统产生偏差的原因，常用的扰动类型包括：
+\begin{itemize}
+  \item 第一类：头车的初始条件扰动；
+  \item 第二类：所有车辆的初始条件扰动；
+  \item 第三类：头车受到的零初始条件外部扰动；
+  \item 第四类：所有车辆受到的零初始条件外部扰动。
+\end{itemize}
+
+
+最后，介绍两个车队系统的重要术语，即同质性和无限性。如果所有车辆都具有相同的动力学特性，则称该车队具有同质性（Chu，1974a）；否则称其具有异质性（Naus等，2010）。
+此外，如果车队有无限辆车辆组成，则称其为无限的（Swaroop and Hedrick, 1996）；否则称为有限的（Jin and Orosz, 2014）。
+理论分析使得研究人员可以通常研究无限车队，以研究由大量但有限辆车组成的车队的本质（Curtain, Iftime, and Zwart, 2010; Jovanovic and Bamieh, 2005）和车队的可扩展性。
+
+\subsection{控制目标}
+
+控制自动驾驶车辆车队的目的是确保同一组的所有车辆以一致的速度移动，同时相邻车辆之间保持理想距离，从而提高交通容量，改善交通安全性，并减少燃料消耗（Horowitz and Varaiya, 2000）。
+车队系统的稳定性特性是上述所有控制目标的基础。研究人员已经提出了两种类型的稳定性，个体稳定性和队列稳定性。
+
+个体稳定性描述了车辆向给定轨迹收敛的情况（Dolk et al., 2017; Dunbar and Caveney, 2012; Ghasemi et al.,2013; Guo, Ding, and Han, 2014; Ploeg,Shukla et al., 2014; Swaroop and Hedrick, 1999; Zheng, Li, Wang et al., 2016），
+收敛速度由稳定系数描述（Barooah, Mehta, and Hespanha, 2009; Hao and Barooah, 2012; Hao, Barooah, and Mehta, 2011; Zheng, Li, Li, and Wang, 2016）。
+然而，随着长度的增加，一个每个个体都稳定的车队仍然可能将一个小的扰动放大并造成交通拥堵(例如走走停停）（Hedrick, Tomizuka, and Varaiya, 1994; Naus et al., 2010。 Shaw and Hedrick, 2007b; Sugiyama et al., 2008）。
+
+为了解决这个问题，研究人员提出了队列稳定性并对其做了大量研究。直观地说，如果扰动在沿车队向下游传播时不被放大，那么就可以说车队是队列稳定的（Peppard, 1974）。
+为了从数学上定义这一特性，在过去的几十年里，针对不同的车队系统提出了各种正式的队列稳定定义，例如（Jin and Orosz, 2014; Khatir and Davidson, 2004; Li, Shi, and Yan, 2016; Ploeg,Van De Wouw et al., 2014; Swaroop and Hedrick, 1996）。
+这些定义的详细情况将在下一节讨论，它们之间的关系是本文的一个重点。
+
+\subsection{控制器设计方法}
+
+设计一个车队控制器的关键是要实现控制目标，如个体稳定性和队列稳定性。
+
+一类最常用的设计方法是预先确定一个反馈控制器并调整其参数以实现控制目标。数学上，实现队列稳定性被重新定义为传递函数需要满足的的某些条件（Jin and Orosz, 2014; Naus et al., 2010; Orosz, 2016），
+或李雅普诺夫函数（Besselink and Johansson, 2017; Dolk et al., 2017; Swaroop and Hedrick, 1996）。这些方法的共同局限性是难以明确地满足饱和约束，如输入饱和和安全约束。
+
+另一类设计方法是前馈控制（Li and Li, 2019; Liu, Li, Li, and Wang, 2017），例如分散模型预测控制（decentralized model predictive control, DMPC）方法（Dunbar and Caveney, 2012）。
+个体稳定性和队列稳定性的性质被显式约束。通过解决每个控制环节中的优化问题，控制器可以保证实现控制目标。
+
+这两类方法的关键步骤是分析队列稳定性质并推导出其充分条件。如果所设计的控制器满足其充分条件，则系统必然是队列稳定的。因此，队列稳定性质的分析方法是非常关键的，也是本文的另一个重点。
+
+\section{队列稳定性定义}
+
+本节介绍了车队控制问题中常用的队列稳定性的定义。队列稳定性定义的发展与车队系统的相关假设密切相关，并深深影响着分析方法。因此，在介绍一个新的定义时，将简要讨论具体的车队系统和分析方法。定义的缩写见表\ref{tab:appendix-translation-tableA2}。
+
+\subsection{队列稳定原始定义（OSS）}
+
+我们首先回顾Chu（1974a）给出的队列稳定（original definition of string stability, OSS）的原始定义。
+
+\begin{definition}[OSS]
+  如果对于车队中的所有车辆，在初始时受到任意一组有界的扰动，所有车辆的位置波动保持有界，并且这些波动在$t \rightarrow 0$时是趋于0的，那么这个车队是稳定的。
+  \label{def:appendix-translation-def1}
+\end{definition}
+
+如果受到的是有界的第一类或第二类干扰，定义\ref{def:appendix-translation-def1}（OSS）呈现了两个性质：
+
+\begin{itemize}
+  \item 所有车辆位置波动的有界性；
+  \item 所有车辆位置波动的收敛性。
+\end{itemize}
+
+为了使有界性非平凡，其应该在车队有任何数量车辆的情况下均成立，即：
+
+\begin{itemize}
+  \item 有界性对于任意长度的车队均成立。
+\end{itemize}
+
+任意车队长度下的界限不变性是一个重要的性质，它保证了队列稳定性的概念是可扩展的，并且说明了从车队中增加或减少车辆是不影响稳定性的。在某些情况下，收敛性也被称为个体稳定性。
 
 \appendix
 
@@ -150,26 +259,49 @@
 \begin{table}
   \centering
   \caption{对车队系统的描述的缩写}
-  \begin{tabular}{ll}
+  \begin{tabular}{llll}
     \toprule
-    变量          & 符号                        \\
+    缩写       &  全称           &  缩写       &  全称            \\
     \midrule
-    $S_m$           & $S_m = \{0\} \cup \{i \in \mathbb{N} | 1 \leqslant i \leqslant m-1 \}.$ \\
-    $S_{e,m}$       & $S_m = \{i \in \mathbb{N} | 1 \leqslant i \leqslant m-1 \}.$                     \\
-    $\chi_i(t)$     & $\chi_i(t) \in \mathbb{R}^n$代表第$i$个子系统的状态   \\
-    $\omega_i(t)$   & $\omega_i(t) \in \mathbb{R}$代表第$i$个子系统受到的扰动 \\
-    $y_i(t)$        & $y_i(t) \in \mathbb{R}$代表第$i$个子系统的输出        \\
-    $\chi_i(t)$     & $\chi_i(t) \in \mathbb{R}^{mn}$代表系统的状态        \\
-    $\omega(t)$     & $\omega(t) \in \mathbb{R}^m$代表系统受到的扰动        \\
-    $y(t)$          & $y(t) \in \mathbb{R}^m$代表系统的输出        \\
-    $\Chi_i(s), Y_i(s), U_i(s)$   & $\chi_i(t), y_i(t), u_i(t)$的拉普拉斯变换        \\
-    $\Chi(s), Y(s), U(s)$         & $\chi(t), y(t), u(t)$的拉普拉斯变换        \\
-    $\mathcal{\Chi}(z), \mathcal{Y}(z), \mathcal{U}(z)$   & $\chi(t), y(t), u(t)$的$z$变换        \\
+    ND        &  节点动力学      &  IFT        &  信息流拓扑结构    \\
+    PF        &  前继跟随拓扑     &  PLF        &  前继领导跟随拓扑  \\
+    BD        &  双向拓扑        &  BDL        &  双向领导拓扑     \\
+    TPF       &  双前继跟随拓扑   &  TPLF       &  双前继领导跟随拓扑 \\
+    $r$PF     &  $r$前继跟随拓扑  &  $r$PLF     &  $r$前继领导跟随拓扑 \\
+    DC        &  分布式控制器     &  MPC        &  模型预测控制       \\
+    SMC       &  滑膜控制        &  FG         &  构成几何           \\
+    CD        &  恒距            &  CTH       &  恒定车头时距       \\
+    NLD       &  非线性距离       &  CQ        &  通信质量          \\
     \bottomrule
   \end{tabular}
-  \label{tab:appendix-translation-table1}
+  \label{tab:appendix-translation-tableA1}
 \end{table}
 
+\begin{table}
+  \centering
+  \caption{队列稳定定义的缩写}
+  \begin{tabular}{llll}
+    \toprule
+    缩写       &  全称                &   定义       \\
+    \midrule
+    OSS       &  队列稳定原始定义              &  1           \\
+    SFSS      &  频域的强队列稳定              &  2           \\
+    FSS       &  频域队列稳定                 &  3           \\
+    ESS       &  末态队列稳定                 &  4           \\
+    HTS       &  队首-队尾稳定                &  5           \\
+    TSS       &  时域队列稳定                 &  6           \\
+    ATSS      &  时域渐进队列稳定              &  7           \\
+    LPSS      &  $\mathcal{L}_p$队列稳定     &  8           \\
+    SLPSS     &  严格$\mathcal{L}_p$队列稳定  &  9           \\
+    DSS       &  扰动队列稳定                 &  10          \\
+    LSS       &  李雅普诺夫队列稳定            &  11          \\
+    ALSS      &  渐进李雅普诺夫队列稳定        &  12          \\
+    IOSS      &  输入-输出队列稳定            &  13          \\
+    ISSS      &  输入-状态队列稳定            &  14          \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:appendix-translation-tableA2}
+\end{table}
 
 % 书面翻译的参考文献
 \bibliographystyle{unsrtnat}
