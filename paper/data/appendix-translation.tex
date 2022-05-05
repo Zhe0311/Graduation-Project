@@ -95,13 +95,11 @@
   称$\chi \in \mathcal{L}_\infty$。
 
   通常，我们考虑一个车队
-  \begin{equation}
-    \dot{\chi} = f(\chi, \omega),
+  \begin{align}
+    \dot{\chi} &= f(\chi, \omega), \\
     \label{eq:appendix-equation-7}
-  \end{equation}
-  \begin{equation}
-    y = g(\chi)
-  \end{equation}
+    y &= g(\chi)
+  \end{align}
 
   这里，函数$f(\chi, \omega): \mathbb{R}^{mn} \times \mathbb{R}^m \rightarrow \mathbb{R}^{mn}$是连续可导且全局Lipschitz的，
   函数$g(\chi): \mathbb{R}^{mn} \rightarrow \mathbb{R}^{m}$是连续可导且全局Lipschitz的。$\chi \in \mathbb{R}^{mn}$代表系统状态向量，
@@ -251,6 +249,88 @@ Heemels, and Nijmeijer, 2012; Qin, Gomez, and Orosz, 2017; Xiao, Darbha, and Gao
 \end{itemize}
 
 任意车队长度下的界限不变性是一个重要的性质，它保证了队列稳定性的概念是可扩展的，并且说明了从车队中增加或减少车辆是不影响稳定性的。在某些情况下，收敛性也被称为个体稳定性。
+OSS非常接近于对队列稳定性的直观描述（Peppard, 1974），只是位置波动不一定比受到的初始扰动小。位置波动可以被类推到其他系统状态的波动，例如速度。
+OSS的主要局限是在理论上不一定对一般车队系统可行。Chu(1974a)提出的$z$变换方法只能用于具有同质ND、IFT、DC、FG和CQ的车队。
+
+\subsection{SFSS与其变体FSS、ESS、HTS}
+
+为了理论分析的方便，Peppard (1974)提出了一个队列稳定在频域下的必要条件，这个条件在之后对队列稳定的研究中得到了广泛的应用，通常被认为是强弦稳定性的定义（Naus et al., 2010）。
+因此，我们把这个条件作为频域的强队列稳定（strong frequency-domain string stability, SFSS）的定义来介绍。
+
+\begin{definition}[SFSS]
+  对于具有PF拓扑结构的线性车队系统，我们称系统是频域的强队列稳定的（SFSS），如果第$i$辆车和其前车，即第$i-1$辆车，之间的输出传递函数，记作$G_{i-1,i}$，使得
+  \begin{equation}
+    \Vert G_{i-1,i}(j\omega) \Vert_{\mathcal{H}_\infty} \leqslant 1, \forall i \in S_{e, m}, \forall m \in \mathbb{N}.
+    \label{eq:appendix-equation-8}
+  \end{equation}
+  \label{def:appendix-translation-def2}
+\end{definition}
+SFSS的一个具体限制是关于车队系统的PF假设。SFSS对于具有其他信息流拓扑结构的车队没有意义，例如对于BD，公式\ref{eq:appendix-equation-8}需要修改（Peppard, 1974）。
+对于$r$PF和$r$PLF拓扑结构，人们提出了三个修改的定义，即频域队列稳定（frequency-domain string stability, FSS）（Naus et al., 2010），
+终态队列稳定（eventual string stability, ESS）（Khatir and Davidson, 2004），以及队首-队尾稳定（head-to-tail stability, HTS）（Jin and Orosz, 2014; 2017）。
+
+\begin{definition}[FSS]
+  对于具有$r$PF或$r$PLF拓扑结构的线性车队系统，我们称系统是频域队列稳定的（FSS），如果头车$0$和任何其他车辆$i$之间的输出传递函数，记为$G_{0, i}$，使得
+  \begin{equation}
+    \Vert G_{0,i}(j\omega) \Vert_{\mathcal{H}_\infty} \leqslant 1, \forall i \in S_{e, m}, \forall m \in \mathbb{N}.
+    \label{eq:appendix-equation-9}
+  \end{equation}
+  \label{def:appendix-translation-def3}
+\end{definition}
+
+\begin{definition}[ESS]
+  对于具有$r$PF或$r$PLF拓扑结构的线性车队系统，我们称系统是末态队列稳定的（ESS），如果头车$0$和任何其他车辆$i$之间的输出传递函数，记为$G_{0, m}$，并且存在$N < m$，使得
+  \begin{equation}
+    \Vert G_{0,i}(j\omega) \Vert_{\mathcal{H}_\infty} \leqslant 1, \forall i > N, \forall m \in \mathbb{N}.
+    \label{eq:appendix-equation-10}
+  \end{equation}
+  \label{def:appendix-translation-def4}
+\end{definition}
+
+\begin{definition}[HTS]
+  对于具有$r$PF或$r$PLF拓扑结构的线性车队系统，我们称系统是队首-队尾稳定的（HTS），如果头车$0$和任何其他车辆$i$之间的输出传递函数，记为$G_{0, i}$，并且存在$N < m$，使得
+  \begin{equation}
+    \Vert G_{0,m}(j\omega) \Vert_{\mathcal{H}_\infty} \leqslant 1, \forall m \in \mathbb{N}.
+    \label{eq:appendix-equation-11}
+  \end{equation}
+  \label{def:appendix-translation-def5}
+\end{definition}
+
+FSS、ESS和HTS都假定在车队中存在一个头车，这与实际情况是相符的。FSS有时被称为弱队列稳定性，与SFSS相比，它在适用于更多的信息流拓扑结构。ESS是FSS的一个特例，也就是说，
+如果一个系统是FSS的，那么它也是ESS的。HTS最初是为混合交通设计的，在混合交通中相互通信的自动驾驶车辆一般在车队尾部（Jin and Orosz, 2014; 2017）。
+
+这些在频域中的定义的第一个局限性是其对车队系统的线性假设。这并不意味着节点动力被假设是线性的，但可以通过适当的非线性反馈方法使其近似线性，例如Sheikholeslam和Desoer（1993），
+Stankovic、Stanojevic和Siljak（2000），Ghasemi等人（2013），Zheng、Li、Wang等人（2016）的工作，这需要对车辆动力学有很好的先验知识。
+
+这些定义的第二个局限性是只考虑车队收到了第三类扰动。这个局限性产生于这些定义中拉普拉斯变换时用到的零初始条件假设。其他扰动类型的系统特性需要进一步分析。
+
+第三个也是更关键的局限性是，$\Vert G_{0,m}(j\omega) \Vert_{\mathcal{H}_\infty} \leqslant 1$只能从能量
+（即$\mathcal{L}_2$范数）的角度来描述信号，而不是它们的最大振幅（即$\mathcal{L}_\infty$范数）。其详细差异将在下一节讨论。
+
+\subsection{TSS和ATSS}
+
+将队列稳定性的概念推广到一类相互连接的系统中，如
+
+\begin{equation}
+  \dot{\chi}_i = f_i(\chi_i, \chi_{i-1}, \cdots, \chi_{i-r}),
+  \label{eq:appendix-equation-12}
+\end{equation}
+其中，$i \in \mathbb{N}$，$\chi \in \mathbb{R}^n$，$\chi_{i-j} \equiv 0, \forall i \leqslant j$，并且$f(0, \cdots, 0) = 0$，
+Swaroop和Hedrick（1996）提出了时域队列稳定（time-domain string stability, TSS）和时域渐进队列稳定（asymptotically time-domain string stability, ATSS）。
+
+\begin{definition}[TSS]
+  \ref{eq:appendix-equation-12}的原点$\chi_i = 0, i \in \mathbb{N}$是TSS的，如果给定任何$\epsilon > 0$，存在一个$\delta > 0$，使得
+  \begin{equation}
+    \sup_{i}{|\chi_i(0)|} < \delta \Rightarrow \sup_{i}{\Vert \chi_i(t) \Vert_\infty} < \epsilon.
+    \label{eq:appendix-equation-13}
+  \end{equation}
+  \label{def:appendix-translation-def6}
+\end{definition}
+
+\begin{definition}[ATSS]
+  \ref{eq:appendix-equation-12}的原点$\chi_i = 0, i \in \mathbb{N}$是ATSS的，如果其是TSS的且渐近地$\sup_{i}{\Vert \chi_i(t) \Vert_\infty} \rightarrow 0$。
+  \label{def:appendix-translation-def7}
+\end{definition}
 
 \appendix
 
