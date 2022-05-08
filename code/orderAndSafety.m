@@ -5,7 +5,7 @@ clc;
 p = 0.5;
 num = 11;
 num_1 = num - 1;
-ve = 15;
+ve = 20;
 %%
 G = [];
 crashtime = [];

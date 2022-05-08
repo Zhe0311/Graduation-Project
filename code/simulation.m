@@ -121,7 +121,7 @@ function [ PDTrate, ifstable, GmaxList, stableIndex, crash] = simulation(num, ve
         for j=1:1:num_l
             %先判断车辆类型，车辆类型只影响目标加速度
             if label(j)==1
-                a_des(j,i)=max(k1*(h(j,i-1)-th*v(j+1,i-1))+k2*(v(j,i-1)-v(j+1,i-1))+kn*a(j,i-1),-3);
+                a_des(j,i)=k1*(h(j,i-1)-th*v(j+1,i-1))+k2*(v(j,i-1)-v(j+1,i-1))+kn*a(j,i-1);
             else
                 if i > act_num
                     dav=v0*(1-exp(-1*alpha/v0*(h(j,i-act_num)-s0)));
@@ -132,6 +132,12 @@ function [ PDTrate, ifstable, GmaxList, stableIndex, crash] = simulation(num, ve
             end
             %计算实际加速度
             a(j+1,i)=(tao-delta_t)/tao*a(j+1,i-1)+delta_t/tao*a_des(j,i);
+            if a(j+1, i) >= 4
+                a(j+1, i) = 4;
+            end
+            if a(j+1, i) <= -3
+                a(j+1, i) = -3;
+            end
             %计算速度、位置、车间距
             v(j+1,i)=max(v(j+1,i-1)+a(j+1,i)*delta_t,0);
             x(j+1,i)=x(j+1,i-1)+v(j+1,i)*delta_t;

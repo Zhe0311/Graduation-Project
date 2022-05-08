@@ -1,0 +1,5 @@
+function statistic(v, a)
+    for i = 1 
+    v_sta = histogram(v(1,:));
+    a_sta = histogram(a(1,:));
+end

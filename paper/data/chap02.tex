@@ -2,142 +2,121 @@
 
 \chapter{仿真平台搭建及分析}
 
+\section{本章引言}
+
+本章介绍仿真平台的搭建，并对仿真平台的真实性进行分析。仿真平台中的车辆是根据其跟驰策略行驶的，在本章中将首要介绍人工驾驶车辆和自动驾驶车辆选用
+的跟驰模型；接着将简要介绍仿真所用的平台以及仿真的参数；最后，由于仿真的真实性将直接影响本工作的实际意义，所以在本章中将会对仿真的真实性进行分析。
+
+本章的结构如图\ref{fig:chap02-1-logic}所示。
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1\linewidth]{chap02-1-structure.pdf}
+  \caption{第2章结构}
+  \label{fig:chap02-1-logic}
+\end{figure}
+
 \section{跟驰行为建模}
 
-图片通常在 \env{figure} 环境中使用 \cs{includegraphics} 插入，如图~\ref{fig:example} 的源代码。
-建议矢量图片使用 PDF 格式，比如数据可视化的绘图；
-照片应使用 JPG 格式；
-其他的栅格图应使用无损的 PNG 格式。
-注意，LaTeX 不支持 TIFF 格式；EPS 格式已经过时。
+在本课题中，需要对人工驾驶和自动驾驶两种车辆的跟驰行为建模。
+
+\subsection{人工驾驶车辆跟驰模型}
+
+根据第一章中对跟驰行为建模研究现状的综述，对于人工驾驶车辆选择表达形式直观，参数量适中，对实际情况拟合情况较好的速度优化跟驰模型（OVM）。其具体表达式为
+
+\begin{align}
+  \dot{v}_n(t) &= \kappa \left\{ V \left[ h_n(t) \right] - v_n(t) \right\} \notag \\
+  V \left[ h_n(t) \right] &= v_0 \left\{ 1 - \exp \left[ - \frac{\alpha}{v_0}\left(h_n(t)-s_0\right) \right] \right\}
+  \label{eq:chap02-1}
+\end{align}
+其中，各符号含义在表\ref{tab:chap01-5}中给出，其相关参数取值如表\ref{tab:chap01-2}所示。
+
+\begin{table}
+  \centering
+  \caption{速度优化跟驰模型参数取值}
+  \begin{tabular}{cc}
+    \toprule
+    参数          &  取值                         \\
+    \midrule
+    敏感系数$\alpha$        & $0.999s^{-1}$         \\
+    敏感系数$\kappa$       & $0.700s^{-1}$             \\
+    自由流速度$v_0$             & $33.0 m/s$          \\
+    最小安全距离$s_0$             & $1.62m$        \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:chap02-1}
+\end{table}
+
+下面对该跟驰模型进行简要分析。
+
+速度优化函数描述了在当前车与前车的车头间距给定后，当前车驾驶员存在一个希望保持的理想的速度。图\ref{fig:chap02-2-OVM1}描述了这个理想速度的大小与两车车头距离的关系。
+可以观察到速度优化函数在其定义域内是单调递增的，即前车距离越远，驾驶员希望保持的理想速度越大，以尽快缩小与前车的距离；当前车距离越近，驾驶员希望保持的理想速度越小，以减小
+追尾的风险，这与真实情况是一致的。
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\linewidth]{example-image-a.pdf}
-  \caption*{国外的期刊习惯将图表的标题和说明文字写成一段，需要改写为标题只含图表的名称，其他说明文字以注释方式写在图表下方，或者写在正文中。}
-  \caption{示例图片标题}
-  \label{fig:example}
+  \subcaptionbox{OVM速度优化函数图像\label{fig:chap02-2-OVM1}}
+    {\includegraphics[width=0.45\linewidth]{chap02-2-OVM1.jpg}}
+  \subcaptionbox{加速度与当前速度、车头间距的关系\label{fig:chap02-2-OVM2}}
+    {\includegraphics[width=0.5\linewidth]{chap02-2-OVM2.jpg}}
+  \caption{OVM函数关系图像}
+  \label{fig:chap02-2-OVM}
 \end{figure}
 
-若图或表中有附注，采用英文小写字母顺序编号，附注写在图或表的下方。
-国外的期刊习惯将图表的标题和说明文字写成一段，需要改写为标题只含图表的名称，其他说明文字以注释方式写在图表下方，或者写在正文中。
+图\ref{fig:chap02-2-OVM2}描述了车头时距、当前速度、加速度三者的关系。可以观察到当当前速度固定时，车头时距越大，加速度也越大，且呈现出与速度优化函数一样的增长规律，这与
+式\ref{eq:chap02-1}是相符合的；当车头间距固定时，理想速度也就确定了，所以随着当前速度的增大，加速度线性减小。
 
-如果一个图由两个或两个以上分图组成时，各分图分别以 (a)、(b)、(c)...... 作为图序，并须有分图题。
-推荐使用 \pkg{subcaption} 宏包来处理， 比如图~\ref{fig:subfig-a} 和图~\ref{fig:subfig-b}。
+\subsection{自动驾驶车辆跟驰模型}
 
-\begin{figure}
+自动驾驶车辆选择基于PID控制的车头时距控制算法来控制跟驰行为，该算法的表达式见式(\ref{eq:chap02-2})。
+\begin{equation}
+  \dot{v}_n(t) = k_1 \left[ h_n(t) - l - t_hv_n(t) \right] + k_2 \left[ v_{n-1}(t) - v_n(t) \right]
+  \label{eq:chap02-2}
+\end{equation}
+其中，各符号含义在表\ref{tab:chap02-2}中给出
+
+\begin{table}
   \centering
-  \subcaptionbox{分图 A\label{fig:subfig-a}}
-    {\includegraphics[width=0.35\linewidth]{example-image-a.pdf}}
-  \subcaptionbox{分图 B\label{fig:subfig-b}}
-    {\includegraphics[width=0.35\linewidth]{example-image-b.pdf}}
-  \caption{多个分图的示例}
-  \label{fig:multi-image}
-\end{figure}
+  \caption{基于PID控制的车头时距控制算法符号说明}
+  \begin{tabular}{cc}
+    \toprule
+    符号          &  含义                         \\
+    \midrule
+    $k_1, k_2$            & 控制步长         \\
+    $t_h$                 & 理想车头时距             \\
+    $l$                   & 车身长度          \\
+    $h_n(t)$              & 第$n$辆车在$t$时刻与前车的车头间距        \\
+    $v_n(t)$              & 第$n$辆车在$t$时刻的速度 \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:chap02-2}
+\end{table}
 
+可以发现在该算法控制下，车辆的加减速由两部分控制。一是当前的两车车头距离与理想的车头距离的大小关系，如果当前两车车头距离小于理想的车头距离，那么参数$k_1$控制的部分倾向于减速；
+二是当前车与前车的速度大小关系，如果当前车速度大于前车速度，$k_2$控制的部分倾向于减速。通过改变$k_1$和$k_2$的值，可以调节这两个部分的权重，二者综合即可决定当前车应当加速还是
+减速，以及加速度的大小。
 
 
 \section{仿真平台的搭建}
 
-表应具有自明性。为使表格简洁易读，尽可能采用三线表，如表~\ref{tab:three-line}。
-三条线可以使用 \pkg{booktabs} 宏包提供的命令生成。
+仿真基于MATLAB软件，模拟了一个由11辆车组成的车队，如图\ref{fig:chap02-3-simu1}所示。车队中的第一辆车是头车，其既不是人工驾驶车辆也不是自动驾驶车辆，而是按照实现规定好的策略行驶，即在0时刻以$-2m/s^2$的
+加速度减速到原速度的$90\%$，紧接着以$2m/s^2$的加速度恢复元素，其速度变化情况如图\ref{fig:chap02-3-simu2}所示。如此设置头车是为了加入扰动，虽扰在真实场景下扰动可能发生在车队中的任何一辆车上，由于受到
+该扰动影响的车辆是此车之后的车辆，只要将此车看作头车，就与仿真实验场景一致了，所以这样的仿真情景具有一定的一般性。
 
-\begin{table}
+\begin{figure}
   \centering
-  \caption{三线表示例}
-  \begin{tabular}{ll}
-    \toprule
-    文件名          & 描述                         \\
-    \midrule
-    thuthesis.dtx   & 模板的源文件，包括文档和注释 \\
-    thuthesis.cls   & 模板文件                     \\
-    thuthesis-*.bst & BibTeX 参考文献表样式文件    \\
-    \bottomrule
-  \end{tabular}
-  \label{tab:three-line}
-\end{table}
+  \subcaptionbox{车队示意图\label{fig:chap02-3-simu1}}
+    {\includegraphics[width=1\linewidth]{chap02-3-simu1.pdf}}
+  \subcaptionbox{头车速度变化曲线（初速度$20m/s$，截取前$10s$）\label{fig:chap02-3-simu2}}
+    {\includegraphics[width=0.6\linewidth]{chap02-3-simu2.jpg}}
+  \caption{仿真场景设置}
+  \label{fig:chap02-2-simu}
+\end{figure}
 
-表格如果有附注，尤其是需要在表格中进行标注时，可以使用 \pkg{threeparttable} 宏包。
-研究生要求使用英文小写字母 a、b、c……顺序编号，本科生使用圈码 ①、②、③……编号。
+为了数值仿真只能模拟，首先将连续场景离散化。为了尽量减小误差，仿真步长取$0.01s$，总仿真时长为$500s$，这意味着有50000个采样点。
 
-\begin{table}
-  \centering
-  \begin{threeparttable}[c]
-    \caption{带附注的表格示例}
-    \label{tab:three-part-table}
-    \begin{tabular}{ll}
-      \toprule
-      文件名                 & 描述                         \\
-      \midrule
-      thuthesis.dtx\tnote{a} & 模板的源文件，包括文档和注释 \\
-      thuthesis.cls\tnote{b} & 模板文件                     \\
-      thuthesis-*.bst        & BibTeX 参考文献表样式文件    \\
-      \bottomrule
-    \end{tabular}
-    \begin{tablenotes}
-      \item [a] 可以通过 xelatex 编译生成模板的使用说明文档；
-        使用 xetex 编译 \file{thuthesis.ins} 时则会从 \file{.dtx} 中去除掉文档和注释，得到精简的 \file{.cls} 文件。
-      \item [b] 更新模板时，一定要记得编译生成 \file{.cls} 文件，否则编译论文时载入的依然是旧版的模板。
-    \end{tablenotes}
-  \end{threeparttable}
-\end{table}
-
-如某个表需要转页接排，可以使用 \pkg{longtable} 宏包，需要在随后的各页上重复表的编号。
-编号后跟表题（可省略）和“（续）”，置于表上方。续表均应重复表头。
-
-\begin{longtable}{cccc}
-    \caption{跨页长表格的表题} \\
-    \toprule
-    表头 1 & 表头 2 & 表头 3 & 表头 4 \\
-    \midrule
-  \endfirsthead
-    \caption[]{跨页长表格的表题（续）} \\
-    \toprule
-    表头 1 & 表头 2 & 表头 3 & 表头 4 \\
-    \midrule
-  \endhead
-    \bottomrule
-  \endfoot
-  Row 1  & & & \\
-  Row 2  & & & \\
-  Row 3  & & & \\
-  Row 4  & & & \\
-  Row 5  & & & \\
-  Row 6  & & & \\
-  Row 7  & & & \\
-  Row 8  & & & \\
-  Row 9  & & & \\
-  Row 10 & & & \\
-\end{longtable}
-
+为了使仿真尽可能的接近真实情况，也应考虑实际情况中的物理限制，如真实场景下车辆的加速度大小是限制在一定范围内的，这由轮胎与道路摩擦因数等原因决定。
 
 
 \section{仿真平台真实性分析}
 
-算法环境可以使用 \pkg{algorithms} 或者 \pkg{algorithm2e} 宏包。
-
-\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
-\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
-
-\begin{algorithm}
-  \caption{Calculate $y = x^n$}
-  \label{alg1}
-  \small
-  \begin{algorithmic}
-    \REQUIRE $n \geq 0$
-    \ENSURE $y = x^n$
-
-    \STATE $y \leftarrow 1$
-    \STATE $X \leftarrow x$
-    \STATE $N \leftarrow n$
-
-    \WHILE{$N \neq 0$}
-      \IF{$N$ is even}
-        \STATE $X \leftarrow X \times X$
-        \STATE $N \leftarrow N / 2$
-      \ELSE[$N$ is odd]
-        \STATE $y \leftarrow y \times X$
-        \STATE $N \leftarrow N - 1$
-      \ENDIF
-    \ENDWHILE
-  \end{algorithmic}
-\end{algorithm}

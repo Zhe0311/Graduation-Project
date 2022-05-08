@@ -101,3 +101,20 @@
 同时模板还提供了 \env{assumption}、\env{definition}、\env{proposition}、
 \env{lemma}、\env{theorem}、\env{axiom}、\env{corollary}、\env{exercise}、
 \env{example}、\env{remar}、\env{problem}、\env{conjecture} 这些相关的环境。
+
+
+若图或表中有附注，采用英文小写字母顺序编号，附注写在图或表的下方。
+国外的期刊习惯将图表的标题和说明文字写成一段，需要改写为标题只含图表的名称，其他说明文字以注释方式写在图表下方，或者写在正文中。
+
+如果一个图由两个或两个以上分图组成时，各分图分别以 (a)、(b)、(c)...... 作为图序，并须有分图题。
+推荐使用 \pkg{subcaption} 宏包来处理， 比如图~\ref{fig:subfig-a} 和图~\ref{fig:subfig-b}。
+
+\begin{figure}
+  \centering
+  \subcaptionbox{分图 A\label{fig:subfig-a}}
+    {\includegraphics[width=0.35\linewidth]{example-image-a.pdf}}
+  \subcaptionbox{分图 B\label{fig:subfig-b}}
+    {\includegraphics[width=0.35\linewidth]{example-image-b.pdf}}
+  \caption{多个分图的示例}
+  \label{fig:multi-image}
+\end{figure}
