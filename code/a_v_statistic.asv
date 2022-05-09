@@ -1,5 +1,24 @@
 function statistic(v, a)
-    for i = 1 
-    v_sta = histogram(v(1,:));
-    a_sta = histogram(a(1,:));
+    v_all = [];
+    a_all = [];
+    for i = 1 : 1 : 11
+        v_all = [v_all, v(i, 1:3289)];
+        a_all = [a_all, a(i, 1:3289)];
+    end
+    v_sta = tabulate(v_all);
+    a_sta = tabulate(a_all);
+    figure();
+    v_his = histogram(v_all);
+    figure();
+    a_his = histogram(a_all);
+
+    num = 3289;
+    figure();
+    for i = 1 : 1 : 11
+        plot(1:1:num, a(i, 1:num), 'DisplayName', num2str(i));
+        hold on;
+    end
+    xlabel('时间(s)');
+    ylabel('加速度(m/s^2)');
+    
 end

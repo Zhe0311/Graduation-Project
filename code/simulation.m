@@ -131,13 +131,13 @@ function [ PDTrate, ifstable, GmaxList, stableIndex, crash] = simulation(num, ve
                 end
             end
             %计算实际加速度
-            a(j+1,i)=(tao-delta_t)/tao*a(j+1,i-1)+delta_t/tao*a_des(j,i);
-            if a(j+1, i) >= 4
-                a(j+1, i) = 4;
-            end
-            if a(j+1, i) <= -3
-                a(j+1, i) = -3;
-            end
+             a(j+1,i)=(tao-delta_t)/tao*a(j+1,i-1)+delta_t/tao*a_des(j,i);
+             if a(j+1, i) >= 4
+                 a(j+1, i) = 4;
+             end
+             if a(j+1, i) <= -3
+                 a(j+1, i) = -3;
+             end
             %计算速度、位置、车间距
             v(j+1,i)=max(v(j+1,i-1)+a(j+1,i)*delta_t,0);
             x(j+1,i)=x(j+1,i-1)+v(j+1,i)*delta_t;

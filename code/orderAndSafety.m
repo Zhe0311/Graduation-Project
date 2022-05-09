@@ -2,10 +2,10 @@
 clear;
 clc;
 %% 确定基本参数
-p = 0.5;
+p = 0.7;
 num = 11;
 num_1 = num - 1;
-ve = 20;
+ve = 15;
 %%
 G = [];
 crashtime = [];
