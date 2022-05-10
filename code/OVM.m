@@ -31,3 +31,10 @@ xlabel('当前速度(m/s)');
 ylabel('车头间距(m)');
 zlabel('加速度(m/s^2)');
 
+
+ve = 10 : 0.1 : 33;
+he = s0 - (v0/alpha) * log(1 - (ve/v0));
+figure();
+plot(ve, he, 'k');
+xlabel('均衡速度(m/s)');
+ylabel('均衡距离(m)');

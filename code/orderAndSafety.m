@@ -57,7 +57,7 @@ for i = 1 : 1 : length(p)
         stabletime = 0;
         counter = 0;
         for rank = 1 : 1 : rankNumber
-            [PDT_rate, ifstable, GmaxList, stableIndex, crash] = simulation(num, labels(rank, :), ve(j));
+            [PDT_rate, ifstable, stableIndex, crash] = simulation(num, labels(rank, :), ve(j));
             if ifstable && crash{1} == false && stableIndex ~= -1
                 stabletime = stabletime + stableIndex;
                 Pdt = Pdt + PDT_rate;
