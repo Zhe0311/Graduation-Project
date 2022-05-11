@@ -136,6 +136,13 @@
 \section{混合车队跟驰行为稳定性分析}
 \label{sec:3.3}
 
+首先给出队列稳定性的定义。 \\
+
+\begin{definition}[队列稳定(String Stable)]
+  对于一个跟驰车队，如果头车受到扰动后，扰动沿着车队逐渐衰减，认为该车队是队列稳定的。
+  \label{def:chap03-def1}
+\end{definition}
+
 根据\ref{sec:1.2.2}中对车队稳定性分析研究现状的调研，得到只包含一种传递函数的车队的队列稳定性充分条件为
 \begin{equation}
   | G(j\omega) | < 1
@@ -175,6 +182,62 @@ $\left\Vert G(j\omega) \right\Vert_{\infty}$的值仍能反应车队的队列稳
 
 \section{混合车队跟驰行为稳定性仿真验证}
 
-在本小节中，将通过仿真的方式对\ref{sec:3.3}中理论推导的结果进行验证。
+在本小节中，将通过仿真的方式对\ref{sec:3.3}中理论推导的结果进行验证。需要说明的是，本小节的仿真分为两部分，一部分是理想情况仿真，是对理论推导结果的验证，在仿真过程中没有加入\ref{sec:simulation-platform}
+中提到的加速度限制、人类驾驶员反应延迟、一阶惯性环节等使仿真跟驰行为不同于其跟驰模型的因素；另一部分是模拟真实场景仿真，在仿真过程中加入了使仿真跟驰行为不同于其跟驰模型的因素，是为了说明式(\ref{eq:chap03-20})
+得到的指标确实可以反应模拟真实场景下车队的稳定性。
+
+\subsection{车队稳定情况仿真}
+
+理论上，队列稳定的车队在受到扰动后，扰动会逐渐减小，最终趋于0。下面选取一个场景对车队稳定的情况进行仿真。\\
+
+经验证，在自动驾驶车辆占比为0.5，初始均衡速度为$25m/s$的条件下，$\left\Vert G(j\omega) \right\Vert_{\infty} = \left\Vert G_H(j\omega)^{0.5} \cdot G_A(j\omega)^{0.5} \right\Vert_{\infty} < 1$，
+即理论上车队是稳定的。
+
+\begin{figure}
+  \centering
+  \subcaptionbox{理想情况仿真 \label{fig:chap03-2-stable-ideal}}
+    {\includegraphics[width=0.47\linewidth]{chap03-2-ideal-0.5-25.jpg}}
+  \subcaptionbox{模拟真实场景仿真 \label{fig:chap03-2-stable-real}}
+    {\includegraphics[width=0.52\linewidth]{chap03-2-real-0.5-25.jpg}}
+    \caption*{在理想情况仿真中，车队中每辆跟驰车辆严格按照跟驰模型行驶；在模拟真实场景仿真中，加入了加速度限制、人类驾驶员反应延迟、一阶惯性环节等因素}
+    \caption{车队稳定情况仿真}
+  \label{fig:chap03-2}
+\end{figure}
+
+可以观察到无论是在理想情况仿真中还是在模拟真实场景仿真中，衰减都沿着车队逐渐衰减，这说明二者对应的车队都是稳定的。
+
+\subsection{车队不稳定情况仿真}
+
+经验证，在自动驾驶车辆占比为0.3，初始均衡速度为$10m/s$的条件下，$\left\Vert G(j\omega) \right\Vert_{\infty} = \left\Vert G_H(j\omega)^{0.7} \cdot G_A(j\omega)^{0.3} \right\Vert_{\infty} > 1$，
+即理论上车队是不稳定的。
+
+\begin{figure}
+  \centering
+  \subcaptionbox{理想情况仿真 \label{fig:chap03-3-unstable-ideal}}
+    {\includegraphics[width=0.5\linewidth]{chap03-2-ideal-0.5-15.jpg}}
+  \subcaptionbox{模拟真实场景仿真 \label{fig:chap03-3-unstable-real}}
+    {\includegraphics[width=0.5\linewidth]{chap03-3-real-0.5-15.jpg}}
+    \caption*{在理想情况仿真中，车队中每辆跟驰车辆严格按照跟驰模型行驶；在模拟真实场景仿真中，加入了加速度限制、人类驾驶员反应延迟、一阶惯性环节等因素}
+    \caption{车队不稳定情况仿真}
+  \label{fig:chap03-3}
+\end{figure}
+
+可以观察到在理想情况仿真中，虽然随着时间的推移，车队中每辆车的扰动都趋于0，但从空间角度来看，衰减沿着车队被放大，通过队列稳定性的定义，可以确定这个车队是队列不稳定的。而
+对于模拟真实场景仿真中，衰车队呈现出更不稳定的状态，扰动最终发散，在这样的车队中极容易发生事故。
+
+但在图\ref{fig:chap03-2}和图\ref{fig:chap03-3}所示的场景中，理想情况仿真和模拟真实场景仿真都具有一致的稳定性，虽然这并不意味着理想情况和模拟真实场景情况有相同的稳定性，但可以说明
+式(\ref{eq:chap03-20})得到的车队传递函数无穷范数即使在考虑了真实场景因素的情况下，也能反应车队整体的队列稳定性。
 
 \section{本章小结}
+在本章中，首先对人工驾驶车辆和自动驾驶车辆对扰动对传递情况进行了分析，得到了二者关于扰动大小的传递函数，进而利用队列稳定性这一概念推导得到了理论上车队达到队列稳定的充分条件。但这一条件也存在一定的局限性，
+即只有当车队中所有车辆都严格按照其跟驰模型行驶时，才能使用这个判据，而本工作的核心是建立车队稳定性与碰撞风险之间的联系，碰撞风险是基于仿真得到的，如果仿真场景不够真实，则建立的联系就不具备实际价值。所以
+在本章的最后对理想情况和模拟真实场景都进行了仿真分析，发现$\left\Vert G(j\omega) \right\Vert_{\infty}$的值能够反应真实场景下车队的稳定程度，也说明了本章进行的稳定性分析工作是有意义的。
+
+图\ref{fig:chap03-4}描述了本章的结构。
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1\linewidth]{chap03-structure.pdf}
+  \caption{第3章结构}
+  \label{fig:chap03-4}
+\end{figure}

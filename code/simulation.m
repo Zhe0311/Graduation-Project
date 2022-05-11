@@ -21,7 +21,6 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
     PDT_HV = zeros(num_l, t_num);
     PDT_HV_HV = zeros(num_l, t_num);
     PDT_HV_AV = zeros(num_l, t_num);
-    GmaxList = zeros(num_l, 1);
     PDTrate = -1;
     ifstable = 0;
     stableIndex = -1;
@@ -48,8 +47,8 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
     a_dis = -2;
     t_dis = dis / abs(a_dis);
     dis_num = t_dis / delta_t + 1;
-    a(1, 1:dis_num) = a_dis;
-    a(1, (dis_num+1):(2*dis_num)-1) = -a_dis;
+    a(1, 1:dis_num-1) = a_dis;
+    a(1, (dis_num):(2*dis_num)-2) = -a_dis;
     %一阶惯性环节初始化
     tao = 0.05;
     %急减速减速度
@@ -61,7 +60,7 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
     vd = alpha*exp(-1*alpha/v0*(hs-s0));
     
     %% 计算车队传递函数最大增益
-    w = 0 : 0.01 : 30;
+    w = 0.01 : 0.01 : 30;
     norm_HV = zeros(length(w), 1);
     norm_AV = zeros(length(w), 1);
     mid = zeros(length(w), 1);
@@ -102,15 +101,19 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
     %% 开始遍历一次仿真过程
     for i=2:1:t_num
         %先计算头车的速度，位置
-        v(1,i)=v(1,i-1)+a(1,i)*delta_t;
-        x(1,i)=x(1,i-1)+v(1,i)*delta_t;
+        v(1,i)=v(1,i-1)+a(1,i-1)*delta_t;
+        x(1,i)=x(1,i-1)+v(1,i-1)*delta_t;
         %再计算后面num_l辆车的目标加速度、加速度、速度、位置
         for j=1:1:num_l
-            %先判断车辆类型，车辆类型只影响目标加速度
+            %计算速度、位置、车间距
+            v(j+1,i)=max(v(j+1,i-1)+a(j+1,i-1)*delta_t,0);
+            x(j+1,i)=x(j+1,i-1)+v(j+1,i-1)*delta_t;
+            h(j,i)=x(j,i)-x(j+1,i)-l(j);
+
             if label(j)==1
-                a_des(j,i)=k1*(h(j,i-1)-th*v(j+1,i-1))+k2*(v(j,i-1)-v(j+1,i-1))+kn*a(j,i-1);
+                a_des(j,i)=k1*(h(j,i)-th*v(j+1,i))+k2*(v(j,i)-v(j+1,i))+kn*a(j,i);
             else
-                if i > act_num
+                if  i > act_num
                     dav=v0*(1-exp(-1*alpha/v0*(h(j,i-act_num)-s0)));
                     a_des(j,i)=k*(dav-v(j+1,i-act_num));
                 else
@@ -118,16 +121,13 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
                 end
             end
             %计算实际加速度
-             a(j+1,i)=(tao-delta_t)/tao*a(j+1,i-1)+delta_t/tao*a_des(j,i);
-             if a(j+1, i) >= 4
-                 a(j+1, i) = 4;
-             end
-             if a(j+1, i) <= -3
-                 a(j+1, i) = -3;
-             end
-            %计算速度、位置、车间距
-            v(j+1,i)=max(v(j+1,i-1)+a(j+1,i)*delta_t,0);
-            x(j+1,i)=x(j+1,i-1)+v(j+1,i)*delta_t;
+            a(j+1,i)=(tao-delta_t)/tao*a(j+1,i-1)+delta_t/tao*a_des(j,i);
+            if a(j+1, i) >= 4
+                a(j+1, i) = 4;
+            end
+            if a(j+1, i) <= -3
+                a(j+1, i) = -3;
+            end
 
             % 如果发生碰撞，停止实验
             if x(j+1, i) >= x(j, i) - 5
@@ -139,7 +139,6 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
                 % error("Crashed!!!!!!!!!!!!");
             end
 
-            h(j,i)=x(j,i)-x(j+1,i)-l(j);
             if label(j)==0
                 A=act*v(j+1,i);
             else

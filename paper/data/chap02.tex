@@ -60,7 +60,7 @@
   \dot{v}_n(t) = k_1 \left[ h_n(t) - l - t_hv_n(t) \right] + k_2 \left[ v_{n-1}(t) - v_n(t) \right]
   \label{eq:chap02-2}
 \end{equation}
-其中，各符号含义在表\ref{tab:chap02-2}中给出。
+其中，各符号含义在表\ref{tab:chap02-2}中给出，相关参数取值在表\ref{tab:chap02-added}中给出。
 
 \begin{table}
   \centering
@@ -69,7 +69,7 @@
     \toprule
     符号          &  含义                         \\
     \midrule
-    $k_1, k_2$            & 控制步长         \\
+    $k_1, k_2$            & 控制系数         \\
     $t_h$                 & 理想车头时距             \\
     $l$                   & 车身长度          \\
     $h_n(t)$              & 第$n$辆车在$t$时刻与前车的车头间距        \\
@@ -77,6 +77,22 @@
     \bottomrule
   \end{tabular}
   \label{tab:chap02-2}
+\end{table}
+
+\begin{table}
+  \centering
+  \caption{基于PID控制的车头时距控制算法参数取值}
+  \begin{tabular}{cc}
+    \toprule
+    参数          &  取值                         \\
+    \midrule
+    控制系数$k_1$          & 0.8         \\
+    控制系数$k_2$          & 0.8     \\
+    理想车头时距$t_h$       & $0.6s$             \\
+    车身长度$l$            & $5m$         \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:chap02-added}
 \end{table}
 
 可以发现在该算法控制下，车辆的加减速由两部分控制。一是当前的两车车头距离与理想的车头距离的大小关系，如果当前两车车头距离小于理想的车头距离，那么参数$k_1$控制的部分倾向于减速；
@@ -128,15 +144,16 @@
 
 最后，考虑到人类驾驶员通过直观感受获取己车与前车的信息，也不会时时对信息的变化做出反馈，因为对于人工驾驶车辆，增加了反应延迟$\increment{t} = 1.2$秒。
 
+对于在引言中提到的仿真过程不直观的问题，在本工作中也实现了简易的仿真过程可视化，如图\ref{fig:chap02-4-vis}所示，如此就可以直观地观察车队中车与车之间的距离大小，也可以直观
+地感受潜在危险时刻和碰撞的发生。
+
 \begin{figure}
   \centering
   \includegraphics[width=1\linewidth]{chap02-4-vis.jpg}
-  \caption{仿真过程可视化，紫色车辆为头车，浅蓝色车辆为自动驾驶车辆，黑色车辆为人工驾驶车辆，车辆前一半为深蓝色代表该车辆此时刻存在潜在危险}
+  \caption*{紫色车辆为头车，浅蓝色车辆为自动驾驶车辆，黑色车辆为人工驾驶车辆，车辆前一半为深蓝色代表该车辆此时刻存在潜在危险}
+  \caption{仿真过程可视化}
   \label{fig:chap02-4-vis}
 \end{figure}
-
-对于在引言中提到的仿真过程不直观的问题，在本工作中也实现了简易的仿真过程可视化，如图\ref{fig:chap02-4-vis}所示，如此就可以直观地观察车队中车与车之间的距离大小，也可以直观
-地感受潜在危险时刻和碰撞的发生。
 
 表\ref{tab:chap02-3}列出了仿真平台的重要参数取值。
 
@@ -161,6 +178,10 @@
 
 \section{仿真平台真实性分析}
 
+首先对车辆加速度的仿真情况进行分析，在\ref{sec:2.2}中介绍了车辆的跟驰模型，但可以发现无论是人工驾驶车辆还是自动驾驶车辆都没有对加速度的大小做出限制，通过
+图\ref{fig:chap02-2-OVM2}可以发现人工驾驶车辆的加速度甚至出现了小于$-15m/s^2$、大于$15m/s^2$的情况，这显然是不合理的。这也是在\ref{sec:simulation-platform}
+中对仿真过程中车辆加速度的大小进行了限制的原因，下面限制前后的仿真情况进行分析。
+
 \begin{figure}
   \centering
   \subcaptionbox{限制加速度前加速度曲线\label{fig:chap02-5-a-0.7-15-fig}}
@@ -171,19 +192,25 @@
     {\includegraphics[width=0.45\linewidth]{chap02-5-a-0.7-15-limited-fig.jpg}}
 \subcaptionbox{限制加速度后加速度分布\label{fig:chap02-5-a-0.7-15-limited-his}}
     {\includegraphics[width=0.35\linewidth]{chap02-5-a-0.7-15-limited-his.jpg}}
-  \caption{自动驾驶车辆比例为$0.7$，初始均衡速度为$15m/s$时仿真加速度情况}
+  \caption{车队不稳定时仿真过程中加速度情况}
   \label{fig:chap02-5-a}
 \end{figure}
-
-首先对车辆加速度的仿真情况进行分析，在\ref{sec:2.2}中介绍了车辆的跟驰模型，但可以发现无论是人工驾驶车辆还是自动驾驶车辆都没有对加速度的大小做出限制，通过
-图\ref{fig:chap02-2-OVM2}可以发现人工驾驶车辆的加速度甚至出现了小于$-15m/s^2$、大于$15m/s^2$的情况，这显然是不合理的。这也是在\ref{sec:simulation-platform}
-中对仿真过程中车辆加速度的大小进行了限制的原因，下面限制前后的仿真情况进行分析。
 
 当自动驾驶车辆比例为$0.7$，初始均衡速度为$15m/s$时，车队处于不稳定的状态（将在第\ref{sec:3}章进行介绍）。图\ref{fig:chap02-5-a-0.7-15-fig}和
 \ref{fig:chap02-5-a-0.7-15-his}描述了对加速度大小进行限制前，加速度曲线和加速度分布情况。
 
 可以发现在仿真过程中，加速度存在接近$\pm 10m/s$的情况，这是不合理的。图\ref{fig:chap02-5-a-0.7-15-limited-fig}和\ref{fig:chap02-5-a-0.7-15-limited-his}
 描述了限制加速度大小之后加速度曲线和加速度分布情况。对于不稳定的车队，扰动会逐渐增大，存在较多的加速度边界值是比较合理的。
+
+\begin{figure}
+  \centering
+  \subcaptionbox{限制加速度后加速度曲线 \label{fig:chap02-6-a-fig}}
+    {\includegraphics[width=0.55\linewidth]{chap02-5-a-0.7-25-limited-fig.jpg}}
+  \subcaptionbox{限制加速度后加速度分布 \label{fig:chap02-6-his}}
+    {\includegraphics[width=0.4\linewidth]{chap02-5-a-0.7-25-limited-his.jpg}}
+    \caption{车队稳定时仿真过程中加速度情况}
+  \label{fig:chap02-6}
+\end{figure}
 
 对于处于稳定状态的车队，如自动驾驶车辆比例为$0.7$，初始均衡速度为$25m/s$，其加速度情况如图\ref{fig:chap02-6}所示。
 
@@ -193,21 +220,12 @@
 
 \begin{figure}
   \centering
-  \subcaptionbox{限制加速度后加速度曲线 \label{fig:chap02-6-a-fig}}
-    {\includegraphics[width=0.55\linewidth]{chap02-5-a-0.7-25-limited-fig.jpg}}
-  \subcaptionbox{限制加速度后加速度分布 \label{fig:chap02-6-his}}
-    {\includegraphics[width=0.4\linewidth]{chap02-5-a-0.7-25-limited-his.jpg}}
-  \caption{自动驾驶车辆比例为$0.7$，初始均衡速度为$25m/s$时仿真加速度情况}
-  \label{fig:chap02-6}
-\end{figure}
-
-\begin{figure}
-  \centering
   \subcaptionbox{初始均衡速度为$15m/s$ \label{fig:chap02-7-a-fig}}
     {\includegraphics[width=0.45\linewidth]{chap02-5-v-0.7-15-limited-his.jpg}}
   \subcaptionbox{初始均衡速度为$25m/s$ \label{fig:chap02-7-his}}
     {\includegraphics[width=0.45\linewidth]{chap02-5-v-0.7-25-limited-his.jpg}}
-  \caption{自动驾驶车辆比例为$0.7$时仿真速度情况}
+  \caption*{自动驾驶车辆比例为$0.7$}
+  \caption{仿真过程中速度情况}
   \label{fig:chap02-7}
 \end{figure}
 
