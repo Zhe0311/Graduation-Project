@@ -2,19 +2,30 @@
 clear;
 clc;
 %% 确定基本参数
-p = 0.7;
+p = 0.5;
 num = 11;
 num_1 = num - 1;
 ve = 15;
 %%
 G = [];
 crashtime = [];
+crashindex = [];
 stableTime = [];
-Gmax = zeros(length(p), length(ve));
+Gmax = zeros(length(p)*length(ve), 1);
 meanPDT_rate = [];
-Crash = zeros(length(p), length(ve));
+Crash_rate = zeros(length(p)*length(ve), 1);
 plist = [];
 table = [];
+maxfront = 0;
+minfront = 0;
+maxdisp = 0;
+mindisp = 0;
+front = [];
+dispp = [];
+frontType = [];
+crashType = [];
+endType = [];
+
 %% begin simulation
 for i = 1 : 1 : length(p)
     for j = 1 : 1 : length(ve)
@@ -56,14 +67,42 @@ for i = 1 : 1 : length(p)
         Pdt = 0;
         stabletime = 0;
         counter = 0;
+        crash_cnt = 0;
+        [~, maxfront, minfront] = getFrontIndex(labels);
+        [~, maxdisp, mindisp] = getDispIndex(labels);
+
         for rank = 1 : 1 : rankNumber
-            temp_label = [1,0,1,1,0,1,0,0,0,1];
-            % [PDT_rate, ifstable, stableIndex, crash] = simulation(num, labels(rank, :), ve(j));
-            [PDT_rate, ifstable, stableIndex, crash] = simulation(num, temp_label, ve(j));
+            [PDT_rate, ifstable, stableIndex, crash] = simulation(num, labels(rank, :), ve(j));
             if ifstable && crash{1} == false && stableIndex ~= -1
                 stabletime = stabletime + stableIndex;
                 Pdt = Pdt + PDT_rate;
                 counter = counter + 1;
+            end
+            
+            label = labels(rank, :);
+
+            if crash{1} == true
+                crash_cnt = crash_cnt + 1;
+                G = [G; stableIndex];
+                crashtime = [crashtime; crash{2}];
+                crashindex = [crashindex; crash{4}];
+                front = [front; getFrontIndexABS(labels(rank, :))];
+                dispp = [dispp; getDispIndexABS(labels(rank, :))];
+                
+                
+                crashType = [crashType; label(crash{4})];
+                if crash{4} == 1
+                    frontType = [frontType; -1];
+                    endType = [endType; label(2)];
+                end
+                if crash{4} == 10
+                    frontType = [frontType; label(9)];
+                    endType = [endType; -1];
+                end
+                if crash{4} ~= 1 && crash{4} ~= 10
+                    frontType = [frontType; label(crash{4}-1)];
+                    endType = [endType; label(crash{4}+1)];
+                end
             end
   
             if crash{1} == 1 % 如果没有发生碰撞
@@ -77,12 +116,15 @@ for i = 1 : 1 : length(p)
                 end
 
             end
-            if crash{1} && ifstable == 0 % 如果发生了碰撞
-                G = [G; stableIndex];
-                crashtime = [crashtime; crash{2}];
-            end
-            table = [table; [p(i), ve(j), ifstable, stableIndex, GmaxList, labels(rank, :), crash]];
         end
+        
+        front = (front-minfront) / (maxfront-minfront);
+        dispp = (dispp-mindisp) / (maxdisp-mindisp);
+
+
+        
+        Gmax((i-1)*length(ve)+j) = stableIndex;
+        Crash_rate((i-1)*length(ve)+j) = crash_cnt / rankNumber;
         
         if isempty(safeTable) == 0
             crash_time_list = safeTable(:, 1);
@@ -97,8 +139,6 @@ for i = 1 : 1 : length(p)
             ylabel('追尾车辆下标');
             legend();
         end 
-
-        Gmax(i, j) = stableIndex;
 
         if ifstable % 稳定
             disp("p: " + num2str(p(i)) + ", ve: " + num2str(ve(j)) + " -- stable");

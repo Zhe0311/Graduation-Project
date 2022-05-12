@@ -80,7 +80,7 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
     if ifstable == 0
         stableIndex = Gmax;
     end
-    
+    stableIndex = Gmax;
 
     %% 初始位置
     for i=1:1:num_l
@@ -135,7 +135,7 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
                 crash{2} = i * delta_t;  % 发生碰撞的时间
                 crash{3} = label;        % 车队排列
                 crash{4} = j;            % 发生追尾的车辆下标
-                % return
+                return
                 % error("Crashed!!!!!!!!!!!!");
             end
 
@@ -223,6 +223,7 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
         else
             stabletime = -1;
         end
-        stableIndex = stabletime;
+        % stableIndex = stabletime;
+        stableIndex = Gmax;
     end
 end

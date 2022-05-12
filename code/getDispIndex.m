@@ -1,4 +1,4 @@
-function [dispIndex] = getDispIndex(labels)
+function [dispIndex, maxValue, minValue] = getDispIndex(labels)
     AVNumber = sum(labels(1, :));   % 自动驾驶车辆数量
     number = length(labels(1, :));  % 车队车辆数（不包括头车）
     [len, ~] = size(labels);

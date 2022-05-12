@@ -1,4 +1,4 @@
-function [frontIndex] = getFrontIndex(labels)
+function [frontIndex, maxValue, minValue] = getFrontIndex(labels)
     AVNumber = sum(labels(1, :));   % 自动驾驶车辆数量
     number = length(labels(1, :));  % 车队车辆数（不包括头车）
     [len, ~] = size(labels);
@@ -20,4 +20,3 @@ function [frontIndex] = getFrontIndex(labels)
         frontIndex(i) = (frontIndexABS(i) - minValue) / (maxValue - minValue);
     end
 end
-
