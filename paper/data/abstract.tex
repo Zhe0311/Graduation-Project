@@ -3,37 +3,42 @@
 % 中英文摘要和关键字
 
 \begin{abstract}
-  论文的摘要是对论文研究内容和成果的高度概括。
-  摘要应对论文所研究的问题及其研究目的进行描述，对研究方法和过程进行简单介绍，对研究成果和所得结论进行概括。
-  摘要应具有独立性和自明性，其内容应包含与论文全文同等量的主要信息。
-  使读者即使不阅读全文，通过摘要就能了解论文的总体内容和主要成果。
+随着自动驾驶技术的日渐成熟，自动驾驶车辆和人工驾驶车辆混行很有可能成为未来道路上的常见场景。
+在本课题中，首先为自动驾驶和人工驾驶车辆选择了合适的跟驰模型，并对混合车队的队列稳定性进行了分析，
+接着通过数值仿真的方法，探究了混合车队的队列稳定性与碰撞风险之间的关系，同时探讨了碰撞风险在混合车队中的演化机理。
 
-  论文摘要的书写应力求精确、简明。
-  切忌写成对论文书写内容进行提要的形式，尤其要避免“第 1 章……；第 2 章……；……”这种或类似的陈述方式。
+本工作的意义在于，碰撞风险的评价指标的获得往往是滞后于危险发生的，这不利于交通事故的预测与防范。如果能建立混合车队
+队列稳定性与碰撞风险的关系，就可以通过队列的稳定性对车队的碰撞风险进行评估，起到预防交通事故的作用。同时，通过对碰撞风险
+演化机理的探究，发现混合车队的排列情况也会影响车队的碰撞风险，其中的机理和规律可以指导车队选择碰撞风险更小的排列方式。
 
-  关键词是为了文献标引工作、用以表示全文主要内容信息的单词或术语。
-  关键词不超过 5 个，每个关键词中间用分号分隔。
 
   % 关键词用“英文逗号”分隔，输出时会自动处理为正确的分隔符
   \thusetup{
-    keywords = {关键词 1, 关键词 2, 关键词 3, 关键词 4, 关键词 5},
+    keywords = {自动驾驶, 混合车队, 队列稳定性, 碰撞风险},
   }
 \end{abstract}
 
 \begin{abstract*}
-  An abstract of a dissertation is a summary and extraction of research work and contributions.
-  Included in an abstract should be description of research topic and research objective, brief introduction to methodology and research process, and summary of conclusion and contributions of the research.
-  An abstract should be characterized by independence and clarity and carry identical information with the dissertation.
-  It should be such that the general idea and major contributions of the dissertation are conveyed without reading the dissertation.
+  
+With the development of autonomous driving technology, 
+the mixed driving of autonomous vehicles and human-driven vehicles is likely to become a common situation in the future.
+In this study, the appropriate car-following models are firstly selected for autonomous and human-driven vehicles,
+and the string stability of the mixed vehicular platoon is analyzed.
+Besides, the relationship between the string stability and the crash risk, 
+as well as the evolution mechanism of the crash risk,  of the mixed vehicular platoon is discussed 
+through the situation. 
 
-  An abstract should be concise and to the point.
-  It is a misunderstanding to make an abstract an outline of the dissertation and words “the first chapter”, “the second chapter” and the like should be avoided in the abstract.
-
-  Keywords are terms used in a dissertation for indexing, reflecting core information of the dissertation.
-  An abstract may contain a maximum of 5 keywords, with semi-colons used in between to separate one another.
+The significance of this work is that the acquisition of the evaluation of crash risk usually lags behind the
+occurrence of danger, which is not conducive to the prediction and prevention of traffic accidents.
+If we can build the relationship between the string stability and the crash risk of the mixed vehicular platoon,
+we can use the former to predict the latter,
+which plays a role in preventing traffic accidents. 
+At the same time, the arrangement of the mixed vehicular platoon also affects the crash risk,
+and it is significant to study the evolution mechanism of the crash risk 
+to guide the mixed vehicular platoon to choose the arrangement with less crash risk.
 
   % Use comma as separator when inputting
   \thusetup{
-    keywords* = {keyword 1, keyword 2, keyword 3, keyword 4, keyword 5},
+    keywords* = {automated vehicles, mixed vehicular platoon, string stability, crash risk},
   }
 \end{abstract*}
