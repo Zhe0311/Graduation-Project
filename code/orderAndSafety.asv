@@ -78,6 +78,8 @@ for i = 1 : 1 : length(p)
                 Pdt = Pdt + PDT_rate;
                 counter = counter + 1;
             end
+            
+            label = labels(rank, :);
 
             if crash{1} == true
                 crash_cnt = crash_cnt + 1;
@@ -86,10 +88,21 @@ for i = 1 : 1 : length(p)
                 crashindex = [crashindex; crash{4}];
                 front = [front; getFrontIndexABS(labels(rank, :))];
                 dispp = [dispp; getDispIndexABS(labels(rank, :))];
-                if crash{4} == 1;
-                frontType = [frontType; ];
-                crashType = [];
-endType = [];
+                
+                
+                crashType = [crashType; label(crash{4})];
+                if crash{4} == 1
+                    frontType = [frontType; -1];
+                    endType = [endType; label(2)];
+                end
+                if crash{4} == 10
+                    frontType = [frontType; label(9)];
+                    endType = [endType; -1];
+                end
+                if crash{4} ~= 1 && crash{4} ~= 10
+                    frontType = [frontType; label(crash{4}-1)];
+                    endType = [endType; label(crash{4}+1)];
+                end
             end
   
             if crash{1} == 1 % 如果没有发生碰撞
@@ -102,6 +115,10 @@ endType = [];
                     this_cnt = this_cnt + 1;
                 end
 
+            end
+
+            if crash{1} == false && stableIndex = 
+                
             end
         end
         

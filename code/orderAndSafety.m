@@ -5,7 +5,7 @@ clc;
 p = 0.5;
 num = 11;
 num_1 = num - 1;
-ve = 15;
+ve = 20;
 %%
 G = [];
 crashtime = [];
@@ -26,6 +26,8 @@ frontType = [];
 crashType = [];
 endType = [];
 
+cnter = 0;
+PDT_list = [];
 %% begin simulation
 for i = 1 : 1 : length(p)
     for j = 1 : 1 : length(ve)
@@ -72,7 +74,9 @@ for i = 1 : 1 : length(p)
         [~, maxdisp, mindisp] = getDispIndex(labels);
 
         for rank = 1 : 1 : rankNumber
-            [PDT_rate, ifstable, stableIndex, crash] = simulation(num, labels(rank, :), ve(j));
+            label = [1,1,1,1,1,0,0,0,0,0];
+            % [PDT_rate, ifstable, stableIndex, crash] = simulation(num, labels(rank, :), ve(j));
+            [PDT_rate, ifstable, stableIndex, crash] = simulation(num, label, ve(j));
             if ifstable && crash{1} == false && stableIndex ~= -1
                 stabletime = stabletime + stableIndex;
                 Pdt = Pdt + PDT_rate;
@@ -84,10 +88,10 @@ for i = 1 : 1 : length(p)
             if crash{1} == true
                 crash_cnt = crash_cnt + 1;
                 G = [G; stableIndex];
-                crashtime = [crashtime; crash{2}];
-                crashindex = [crashindex; crash{4}];
-                front = [front; getFrontIndexABS(labels(rank, :))];
-                dispp = [dispp; getDispIndexABS(labels(rank, :))];
+                %crashtime = [crashtime; crash{2}];
+                %crashindex = [crashindex; crash{4}];
+                % front = [front; getFrontIndexABS(labels(rank, :))];
+                % dispp = [dispp; getDispIndexABS(labels(rank, :))];
                 
                 
                 crashType = [crashType; label(crash{4})];
@@ -109,12 +113,23 @@ for i = 1 : 1 : length(p)
                 DispIndex = getDispIndex(labels); % 计算空间分布指数
                 FrontIndex = getFrontIndex(labels); % 计算靠前分布指数
                 % safeTable =  [safeTable; [crash{4}, DispIndex(rank), FrontIndex(rank)]];
-                safeTable =  [safeTable; [crash{4}, -1, FrontIndex(rank)]];
+                % safeTable =  [safeTable; [crash{4}, -1, FrontIndex(rank)]];
                 all_cnt = all_cnt + 1;
                 if (labels(rank, crash{4}) == 0) && (labels(rank, crash{4}-1) == 0)
                     this_cnt = this_cnt + 1;
                 end
+                
+            end
 
+            if crash{1} == false && stableIndex == -1
+                cnter = cnter + 1;
+            end
+
+            if crash{1} == false && stableIndex ~= -1 && stableIndex < 498
+                stableTime = [stableTime; stableIndex];
+                PDT_list = [PDT_list; PDT_rate];
+                front = [front; getFrontIndexABS(labels(rank, :))];
+                dispp = [dispp; getDispIndexABS(labels(rank, :))];
             end
         end
         

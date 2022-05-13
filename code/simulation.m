@@ -71,15 +71,6 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
     end
     %
     Gmax = max(mid);
-    if Gmax <= 1
-        ifstable = 1;
-    else
-        ifstable = 0;
-    end
-
-    if ifstable == 0
-        stableIndex = Gmax;
-    end
     stableIndex = Gmax;
 
     %% 初始位置
@@ -193,7 +184,7 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
     PDTrate = sum(sum(PDT')) / num_l / t_num;
 
     %% 如果稳定
-    if ifstable
+    if 1
         midv=v(num,:);
         stablev = ve;
         % if min(abs(midv-stablev))<=0.05*stablev
@@ -224,6 +215,6 @@ function [ PDTrate, ifstable, stableIndex, crash] = simulation(num, vehiclelabel
             stabletime = -1;
         end
         % stableIndex = stabletime;
-        stableIndex = Gmax;
+        stableIndex = stabletime;
     end
 end

@@ -2,8 +2,8 @@
 clear;
 clc;
 %%
-p = 0 : 0.1 : 1;
-ve = 10 : 2 : 30;
+p = 0.5;
+ve = 20;
 
 th = 0.6;
 k1 = 0.8;
@@ -23,7 +23,7 @@ for i = 1 : 1 : length(p)
         hs = s0-v0/alpha*log(1-ve(j)/v0);
         vd = alpha*exp(-1*alpha/v0*(hs-s0));
         
-        w = 0.01 : 0.01 : 30;
+        w = 0.01 : 0.01 : 40;
         norm_HV = zeros(length(w), 1);
         norm_AV = zeros(length(w), 1);
         mid = zeros(length(w), 1);
@@ -35,6 +35,8 @@ for i = 1 : 1 : length(p)
         Gmax(j, i) = max(mid);
     end
 end
+
+
 
 surf(p, ve, Gmax);
 ylabel("均衡速度(m/s)");
