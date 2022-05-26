@@ -6,7 +6,6 @@
 \section{人工驾驶车辆扰动传递函数推导}
 
 人工驾驶车辆的跟驰行为由速度优化模型（OVM）描述，其具体表达式为
-
 \begin{align}
   \dot{v}_n(t) &= \kappa \left\{ \mathrm{V} \left[ h_n(t) \right] - v_n(t) \right\} \notag \\
   \mathrm{V} \left[ h_n(t) \right] &= v_0 \left\{ 1 - \exp \left[ - \frac{\alpha}{v_0}\left(h_n(t)-s_0\right) \right] \right\}
@@ -29,16 +28,15 @@
   h_e = s_0 - \frac{v_0}{\alpha}\ln\left( 1 - \frac{v_e}{v_0} \right)
   \label{eq:chap03-4}
 \end{equation}
-
-图\ref{fig:chap03-1}描述了均衡距离与均衡速度的关系，从中可以看出OVM的均衡距离与均衡速度呈正相关，均衡速度越大，两车之间的均衡距离也越大，这说明当速度较大时，驾驶员倾向于
-增大与前车的距离以减小追尾的风险。同时也可以看出随着均衡速度的增加，均衡距离的增长速度也越来越快。
-
 \begin{figure}
   \centering
   \includegraphics[width=0.5\linewidth]{chap03-1.jpg}
   \caption{OVM均衡距离与均衡速度关系曲线}
   \label{fig:chap03-1}
 \end{figure}
+
+图\ref{fig:chap03-1}描述了均衡距离与均衡速度的关系，从中可以看出OVM的均衡距离与均衡速度呈正相关，均衡速度越大，两车之间的均衡距离也越大，这说明当速度较大时，驾驶员倾向于
+增大与前车的距离以减小追尾的风险。同时也可以看出随着均衡速度的增加，均衡距离的增长速度也越来越快。
 
 下面对OVM的人工驾驶车辆对扰动的传递情况进行分析。假设车队受到扰动，第$n-1$辆车和第$n$辆车的扰动为
 \begin{equation}
