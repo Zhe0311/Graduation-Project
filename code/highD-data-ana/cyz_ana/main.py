@@ -16,16 +16,33 @@ if __name__ == '__main__':
     # plot setting
     plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
 
+    speedUp_no = []
+    speedDown_no = []
     speedUp = []
     speedDown = []
     indexList = ["thw", "ttc", "dhw"]
-    index = indexList[0]
+    index = indexList[1]
 
     # print(len(tracksInfo))
 
     for track in tracksInfo:
         for idx, index_ in enumerate(track[index]):
-            #  if track["followingId"][idx] != 0 and track["precedingId"][idx] != 0:  # 既在跟随，又被跟随
+            if track["followingId"][idx] != 0 and track["precedingId"][idx] != 0:  # 既在跟随，又被跟随
+            # if track["precedingId"][idx] != 0: # 如果有前车
+            #     followingId = track["followingId"][idx]
+            #     frame = track["frame"][idx]
+            #     followingDis = 0
+            #     if followingId != 0: # 如果有跟随车辆
+            #         beginFrame = tracksInfo[followingId-1]["frame"][0]
+            #         followingDis = tracksInfo[followingId-1]["dhw"][frame-beginFrame]
+            #     if sum(track["followingId"]) == 0 or followingDis > 150:
+                    if track["xAcceleration"][idx] > 0:
+                        speedUp.append(index_)
+                    elif track["xAcceleration"][idx] < 0:
+                        speedDown.append(index_)
+
+    for track in tracksInfo:
+        for idx, index_ in enumerate(track[index]):
             if track["precedingId"][idx] != 0: # 如果有前车
                 followingId = track["followingId"][idx]
                 frame = track["frame"][idx]
@@ -35,9 +52,9 @@ if __name__ == '__main__':
                     followingDis = tracksInfo[followingId-1]["dhw"][frame-beginFrame]
                 if sum(track["followingId"]) == 0 or followingDis > 150:
                     if track["xAcceleration"][idx] > 0:
-                        speedUp.append(index_)
+                        speedUp_no.append(index_)
                     elif track["xAcceleration"][idx] < 0:
-                        speedDown.append(index_)
+                        speedDown_no.append(index_)
 
     print(np.mean(speedUp), np.mean(speedDown))
 
@@ -51,16 +68,26 @@ if __name__ == '__main__':
     #     if speedDown[i] >= -2000 and speedDown[i] <= 2000:
     #         speedDown_.append(speedDown[i])
 
-    print(stats.ttest_ind(speedUp, speedDown))
+    all = []
+    all_no = []
+    all = speedUp + speedDown
+    all_no = speedUp_no + speedDown_no
+
+    print(stats.ttest_ind(all, all_no))
+
+
+    plt.hist(all, bins=30)
+    print("all: ", np.mean(all))
+
     # print(speedUp)
-    plt.hist(speedUp, bins=30)
+    # plt.hist(speedUp, bins=30)
 
     plt.xlabel(index)
     plt.ylabel("频次")
     plt.show()
 
-    plt.hist(speedDown, bins=30)
+    # plt.hist(speedDown, bins=30)
 
-    plt.xlabel(index)
-    plt.ylabel("频次")
-    plt.show()
+    # plt.xlabel(index)
+    # plt.ylabel("频次")
+    # plt.show()
